@@ -15,7 +15,7 @@ import javafx.scene.control.Alert;
  * @author charlesziegler
  */
 public class Error_Handler {
-    private static ResourceBundle rb = ResourceBundle.getBundle("lang", Locale.getDefault());
+//    private static ResourceBundle rb = ResourceBundle.getBundle("lang", Locale.getDefault());
      
      public static boolean checkLoginFields(String name, String password) {
         StringBuilder errors = new StringBuilder();
