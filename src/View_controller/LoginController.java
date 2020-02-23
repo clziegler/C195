@@ -7,7 +7,8 @@ package View_controller;
 
 import C195.Main;
 import Model.User;
-import Model.Error_Handler;
+import Utility.Error_Handler;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,12 +17,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -52,7 +58,7 @@ public class LoginController implements Initializable {
     }    
 
     @FXML
-    private void loginButtonHandler(ActionEvent event) {
+    private void loginButtonHandler(ActionEvent event) throws IOException {
         System.out.println("You clicked login");
         String userTry = usernameField.getText();
         String passwordTry = passwordField.getText();
@@ -71,11 +77,12 @@ public class LoginController implements Initializable {
             alert.setContentText("login_success_content");
             alert.showAndWait();
             // Sets current user for the current session
-//                main.currentUser = validUser;
-//                logLogin(inputUser.getUsername(), true);
-//                main.rootLayoutController.setLoggedInUser(validUser.getUsername());
-//                main.showAppointmentsScreen();
-        }
+            Parent newPartParent = FXMLLoader.load(getClass().getResource("MainScreen.fxml"));
+            Scene newPartScene = new Scene(newPartParent);
+            Stage app_stage = new Stage();
+            app_stage.setScene(newPartScene);
+            app_stage.showAndWait();
+            }
         } 
     }
 

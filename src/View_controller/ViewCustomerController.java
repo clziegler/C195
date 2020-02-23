@@ -23,7 +23,7 @@ import javafx.stage.Stage;
  *
  * @author charlesziegler
  */
-public class AddCustomerController implements Initializable {
+public class ViewCustomerController implements Initializable {
 
     @FXML
     private TextField custAdd1Field;
@@ -54,6 +54,7 @@ public class AddCustomerController implements Initializable {
 
     @FXML
     private void addCustButtinHandler(ActionEvent event) {
+         System.out.println("You clicked add customer.");
     }
 
     @FXML
