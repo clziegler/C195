@@ -9,6 +9,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 
 /**
  *
@@ -23,6 +24,7 @@ public class Customer {
     private final StringProperty postalCode;
     private final StringProperty phone;
     private final StringProperty country;
+    
     private int addressId;
     private int cityId;
     private int countryId;

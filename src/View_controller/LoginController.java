@@ -6,6 +6,7 @@
 package View_controller;
 
 import C195.Main;
+import Model.CustomerDB;
 import Model.User;
 import Utility.Error_Handler;
 import java.io.IOException;
@@ -47,6 +48,8 @@ public class LoginController implements Initializable {
     @FXML
     private Button quitButton;
     private final DateTimeFormatter logTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss(z)");
+    public static String loggedIn;
+
     
 
     /**
@@ -71,6 +74,8 @@ public class LoginController implements Initializable {
         if(authUser == null) { // login was incorrect or user not found
             Error_Handler.warningAlert("Fail!");
         } else { // login was valid
+            loggedIn = authUser.getName();
+            CustomerDB.refreshCustomerTable();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("login_success_title");
             alert.setHeaderText("login_success_header");
@@ -117,4 +122,5 @@ public class LoginController implements Initializable {
         
         return user;
     }
+    
 }

@@ -5,6 +5,7 @@
  */
 package View_controller;
 
+import Model.Customer;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -17,6 +18,10 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import Utility.Error_Handler;
+import Model.Customer;
+import Model.CustomerDB;
+import javafx.scene.Node;
 
 /**
  * FXML Controller class
@@ -54,7 +59,35 @@ public class AddCustomerController implements Initializable {
 
     @FXML
     private void addCustButtinHandler(ActionEvent event) {
+        System.out.println("You clicked add customer");
+        
+        String name = custNameField.getText();
+        String add1 = custAdd1Field.getText();
+        String add2 = custAdd2Field.getText();
+        String phone = custPhoneField.getText();
+        String city = custCityField.getText();
+        String country = custCountryField.getText();
+        String post = custPostCodeField.getText();
+        
+        if(Error_Handler.checkCustoemrFields(name, add1, add2, phone, city, country, post)){
+            Customer customer = new Customer();
+            customer.setName(name);
+            customer.setAddress(add1);
+            customer.setAddress2(add2);
+            customer.setPhone(phone);
+            customer.setCity(city);
+            customer.setCountry(country);
+            customer.setPostalCode(post);
+            CustomerDB.addCustomer(customer);
+            CustomerDB.refreshCustomerTable();
+            
+            Node node = (Node)event.getSource();
+            Stage stage = (Stage)node.getScene().getWindow();
+            stage.close();
+                
+        }
     }
+    
 
     @FXML
     private void cancelAddCustButtonHandler(ActionEvent event) {

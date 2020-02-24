@@ -5,12 +5,20 @@
  */
 package View_controller;
 
+import Model.Customer;
+import Model.CustomerDB;
+import Utility.Error_Handler;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -43,18 +51,61 @@ public class ViewCustomerController implements Initializable {
     private Button addCustButton;
     @FXML
     private Button cancelAddCustButton;
+    @FXML
+    private TextField custIDFiled;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        custIDFiled.setDisable(true);
+        
         // TODO
-    }    
+    } 
+    public void setCustomer(Customer customer){
+        custAdd1Field.setText(customer.getAddress());
+        custAdd2Field.setText(customer.getAddress2());
+        custPhoneField.setText(customer.getPhone());
+        custCityField.setText(customer.getCity());
+        custCountryField.setText(customer.getCountry());
+        custPostCodeField.setText(customer.getPostalCode());
+        custNameField.setText(customer.getName());
+        custIDFiled.setText(Integer.toString(customer.getCustomerId()));
+    }
+    
 
     @FXML
-    private void addCustButtinHandler(ActionEvent event) {
-         System.out.println("You clicked add customer.");
+    private void addCustButtinHandler(ActionEvent event) throws IOException {
+        
+        System.out.println("You clicked view customer.");
+        String name = custNameField.getText();
+        String add1 = custAdd1Field.getText();
+        String add2 = custAdd2Field.getText();
+        String phone = custPhoneField.getText();
+        String city = custCityField.getText();
+        String country = custCountryField.getText();
+        String post = custPostCodeField.getText();
+        
+        if(Error_Handler.checkCustoemrFields(name, add1, add2, phone, city, country, post)){
+            Customer customer = new Customer();
+            customer.setCustomerId(Integer.parseInt(custIDFiled.getText()));
+            System.out.println(Integer.parseInt(custIDFiled.getText()));
+            customer.setName(name);
+            customer.setAddress(add1);
+            customer.setAddress2(add2);
+            customer.setPhone(phone);
+            customer.setCity(city);
+            customer.setCountry(country);
+            customer.setPostalCode(post);
+            CustomerDB.addCustomer(customer);   
+            CustomerDB.refreshCustomerTable();
+             
+            Node node = (Node)event.getSource();
+            Stage stage = (Stage)node.getScene().getWindow();
+            stage.close();
+                
+        }
     }
 
     @FXML

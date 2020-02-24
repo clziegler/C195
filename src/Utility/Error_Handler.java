@@ -42,6 +42,60 @@ public class Error_Handler {
 
         return true;
     } 
+
+    /**
+     *
+     * @param name
+     * @param add1
+     * @param add2
+     * @param phone
+     * @param city
+     * @param country
+     * @param postCode
+     * @return
+     */
+    public static boolean checkCustoemrFields(String name, String add1, String add2, String phone, String city, String country, String postCode) {
+        StringBuilder errors = new StringBuilder();
+
+        if (name.trim().isEmpty()) {
+            errors.append("-Please Enter User Name \n");
+
+        }
+        if ((add1.trim().isEmpty()) && (add2.trim().isEmpty())) {
+            errors.append("-Please Enter Address \n");
+        }
+        if (phone.trim().isEmpty()) {
+            errors.append("-Please Enter phone number \n");
+
+        }
+         if (city.trim().isEmpty()) {
+            errors.append("-Please Enter City \n");
+
+        }
+          if (country.trim().isEmpty()) {
+            errors.append("-Please Enter Country \n");
+
+        }
+           if (postCode.trim().isEmpty()) {
+            errors.append("-Please Enter Postal code \n");
+
+        }
+        
+        
+        if (errors.length() > 0) {
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("Required Fields Empty:");
+            alert.setContentText(errors.toString());
+
+            alert.showAndWait();
+            return false;
+        }
+        
+
+        return true;
+    } 
     static public void warningAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning!");
