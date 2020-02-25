@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package View_controller;
 
 import Model.Customer;
@@ -14,11 +10,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -53,13 +46,15 @@ public class ViewCustomerController implements Initializable {
     private Button cancelAddCustButton;
     @FXML
     private TextField custIDFiled;
+    private int custId;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        custIDFiled.setDisable(true);
+      custIDFiled.setDisable(true);
+      
         
         // TODO
     } 
@@ -72,6 +67,7 @@ public class ViewCustomerController implements Initializable {
         custPostCodeField.setText(customer.getPostalCode());
         custNameField.setText(customer.getName());
         custIDFiled.setText(Integer.toString(customer.getCustomerId()));
+        custId = customer.getCustomerId();
     }
     
 
@@ -89,6 +85,7 @@ public class ViewCustomerController implements Initializable {
         
         if(Error_Handler.checkCustoemrFields(name, add1, add2, phone, city, country, post)){
             Customer customer = new Customer();
+            customer.setCustomerId(custId);
             customer.setName(name);
             customer.setAddress(add1);
             customer.setAddress2(add2);

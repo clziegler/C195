@@ -13,17 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
-import java.time.temporal.TemporalAccessor;
-import java.util.TimeZone;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -33,9 +25,7 @@ import javafx.collections.ObservableList;
  */
 public class AppointmentDB {
      public static  ObservableList<Appointment> appointments = FXCollections.observableArrayList();
-//     private static ZonedDateTime zdt = ZonedDateTime.now();
      private static DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT ).withZone(ZoneId.of("Z"));
-     static DateFormat FORMATTER = new SimpleDateFormat("MM/dd hh:mma");
     
     
      public static void addAppointment(Appointment appointment) {
@@ -129,23 +119,15 @@ public class AppointmentDB {
                 appointment.setContact(rs.getString("appointment.contact"));
                 Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
                 String start = formatter.format( startInstant );
-//                Timestamp start = rs.getTimestamp("appointment.start");
                 appointment.setStart(startInstant.toString());
                 appointment.setLocalStart(start);
                 Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
                 String end = formatter.format( endInstant );
-//                Timestamp end = rs.getTimestamp("appointment.end");
                 appointment.setEnd(endInstant.toString());
                 appointment.setLocalEnd(end);
                 appointment.setCustName(rs.getString("customer.customerName"));
+              
                 appointments.add(appointment);
-                System.out.println(startInstant.toString());
-//                System.out.println(start.toInstant().toString());
-//                System.out.println(startFormatted);
-//                System.out.println(end.toLocalDateTime().toString());
-                System.out.println(start);
-                System.out.println(end);
-                
                 
             }
         } catch (SQLException e) {
@@ -154,11 +136,142 @@ public class AppointmentDB {
         }
        
     }
+    public static void getDayAppointments() {
+        PreparedStatement stmt;
+        String query;
+       
+
+        try {
+            query =  "SELECT appointment.appointmentId, appointment.customerId, appointment.title, "+
+	"appointment.description, appointment.start, appointment.end, appointment.createdBy, "+ 
+	"appointment.location, appointment.contact, customer.customerName "+
+	"FROM appointment, customer WHERE appointment.customerId = customer.customerId "+
+        "AND DATE(appointment.start) = CURDATE() AND DATE(appointment.start) <= CURDATE() + 1;";
+            stmt = Main.databaseConnection.prepareStatement(query);
+                    
+        
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment.appointmentId"));
+                appointment.setCustomerId(rs.getInt("appointment.customerId"));
+                appointment.setType(rs.getString("appointment.title"));
+                appointment.setDescription(rs.getString("appointment.description"));
+                appointment.setLocation(rs.getString("appointment.location"));
+                appointment.setContact(rs.getString("appointment.contact"));
+                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
+                String start = formatter.format( startInstant );
+                appointment.setStart(startInstant.toString());
+                appointment.setLocalStart(start);
+                Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
+                String end = formatter.format( endInstant );
+                appointment.setEnd(endInstant.toString());
+                appointment.setLocalEnd(end);
+                appointment.setCustName(rs.getString("customer.customerName"));
+                
+                appointments.add(appointment);
+                
+            }
+        } catch (SQLException e) {
+            System.out.println("Issue with SQL");
+            e.printStackTrace();
+        }
+       
+    }
+    public static void getWeekAppointments() {
+        PreparedStatement stmt;
+        String query;
+       
+
+        try {
+            query =  "SELECT appointment.appointmentId, appointment.customerId, appointment.title, "+
+	"appointment.description, appointment.start, appointment.end, appointment.createdBy, "+ 
+	"appointment.location, appointment.contact, customer.customerName "+
+	"FROM appointment, customer WHERE appointment.customerId = customer.customerId "+
+        "AND DATE(appointment.start) >= CURDATE() AND DATE(appointment.start) <= CURDATE() + 7;";
+            stmt = Main.databaseConnection.prepareStatement(query);
+                    
+        
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment.appointmentId"));
+                appointment.setCustomerId(rs.getInt("appointment.customerId"));
+                appointment.setType(rs.getString("appointment.title"));
+                appointment.setDescription(rs.getString("appointment.description"));
+                appointment.setLocation(rs.getString("appointment.location"));
+                appointment.setContact(rs.getString("appointment.contact"));
+                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
+                String start = formatter.format( startInstant );
+                appointment.setStart(startInstant.toString());
+                appointment.setLocalStart(start);
+                Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
+                String end = formatter.format( endInstant );
+                appointment.setEnd(endInstant.toString());
+                appointment.setLocalEnd(end);
+                appointment.setCustName(rs.getString("customer.customerName"));
+               
+                appointments.add(appointment);
+                
+            }
+        } catch (SQLException e) {
+            System.out.println("Issue with SQL");
+            e.printStackTrace();
+        }
+       
+    }
+    public static void getMonthAppointments() {
+        PreparedStatement stmt;
+        String query;
+       
+
+        try {
+            query =  "SELECT appointment.appointmentId, appointment.customerId, appointment.title, "+
+	"appointment.description, appointment.start, appointment.end, appointment.createdBy, "+ 
+	"appointment.location, appointment.contact, customer.customerName "+
+	"FROM appointment, customer WHERE appointment.customerId = customer.customerId "+
+        "AND DATE(appointment.start) >= CURDATE() AND DATE(appointment.start) <= CURDATE() + 31;";
+            stmt = Main.databaseConnection.prepareStatement(query);
+                    
+        
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(rs.getInt("appointment.appointmentId"));
+                appointment.setCustomerId(rs.getInt("appointment.customerId"));
+                appointment.setType(rs.getString("appointment.title"));
+                appointment.setDescription(rs.getString("appointment.description"));
+                appointment.setLocation(rs.getString("appointment.location"));
+                appointment.setContact(rs.getString("appointment.contact"));
+                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
+                String start = formatter.format( startInstant );
+                appointment.setStart(startInstant.toString());
+                appointment.setLocalStart(start);
+                Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
+                String end = formatter.format( endInstant );
+                appointment.setEnd(endInstant.toString());
+                appointment.setLocalEnd(end);
+                appointment.setCustName(rs.getString("customer.customerName"));
+               
+                appointments.add(appointment);
+                
+            }
+        } catch (SQLException e) {
+            System.out.println("Issue with SQL");
+            e.printStackTrace();
+        }
+       
+    }
+    public static void clearAppointments(){
+        appointments.clear();
+    }
+      
       
        public static void refreshAppointmentTable(){
         appointments.clear();
         getAppointments();      
     }
+       
       
 }
 

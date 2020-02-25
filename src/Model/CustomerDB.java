@@ -9,11 +9,8 @@ import C195.Main;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import Model.User;
 import java.time.format.DateTimeFormatter;
-import javafx.stage.Stage;
 import View_controller.LoginController;
-import View_controller.MainScreenController;
 import com.mysql.jdbc.Statement;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -264,6 +261,7 @@ public class CustomerDB {
     
     }
     public static void refreshCustomerTable(){
+        AppointmentDB.refreshAppointmentTable();
         customers.clear();
         getCustomers();
         

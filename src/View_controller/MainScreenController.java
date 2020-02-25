@@ -5,7 +5,7 @@
  */
 package View_controller;
 
-import C195.Main;
+
 import Model.Appointment;
 import Model.AppointmentDB;
 import java.net.URL;
@@ -20,7 +20,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import Model.Customer;
@@ -28,8 +27,6 @@ import Model.CustomerDB;
 import java.io.IOException;
 import java.util.function.Predicate;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXMLLoader;
@@ -38,7 +35,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
+
 
 /**
  * FXML Controller class
@@ -93,6 +92,9 @@ public class MainScreenController implements Initializable {
     private TableView<Appointment> appointTableView;
     @FXML
     private TableColumn<Appointment, String> appointEndCol;
+    @FXML
+    private RadioButton allRadioButton1;
+    private ToggleGroup tg;
     
     /**
      * Initializes the controller class.
@@ -100,6 +102,14 @@ public class MainScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         userText.setText(LoginController.loggedinUser.getName());
+        
+        tg = new ToggleGroup();
+        this.todayRadioButton.setToggleGroup(tg);
+        this.weeklyRadioButton.setToggleGroup(tg);
+        this.monthlyRadioButton.setToggleGroup(tg);
+        this.allRadioButton1.setToggleGroup(tg);
+        allRadioButton1.setSelected(true);
+        
         
      
 //     Lambda Expressions here for custom rendering of table cells
@@ -183,7 +193,30 @@ public class MainScreenController implements Initializable {
         }
         
     });
-        // TODO
+        searcjAppointField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+        if (isNowFocused) {
+            Platform.runLater(() -> searcjAppointField.selectAll());
+        }
+        
+    });
+        
+        todayRadioButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            AppointmentDB.clearAppointments();
+            AppointmentDB.getDayAppointments();
+    }));
+
+        weeklyRadioButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            AppointmentDB.clearAppointments();
+            AppointmentDB.getWeekAppointments();
+    }));
+       monthlyRadioButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            AppointmentDB.clearAppointments();
+            AppointmentDB.getMonthAppointments();
+            
+    }));
+        allRadioButton1.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            
+    }));
     }    
 
     @FXML
@@ -370,6 +403,8 @@ public class MainScreenController implements Initializable {
 
     private void todayRadioButtonHandler(ActionEvent event) {
         System.out.println("You clicked today radio.");
+        AppointmentDB.getDayAppointments();
+    
     }
 
     private void weeklyRadioButtonHandler(ActionEvent event) {
@@ -382,7 +417,10 @@ public class MainScreenController implements Initializable {
 
     @FXML
     private void radioButtonHandler(ActionEvent event) {
-    }
-
-    
+         
+        
+        
+         
+        
+    }  
 }
