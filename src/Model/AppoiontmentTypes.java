@@ -5,10 +5,15 @@
  */
 package Model;
 
+import javafx.collections.ObservableList;
+
 /**
  *
  * @author charlesziegler
  */
-public class Country {
+public class AppoiontmentTypes {
+    
+    
+
     
 }

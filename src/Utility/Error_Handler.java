@@ -5,6 +5,8 @@
  */
 package Utility;
 
+
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
@@ -96,6 +98,39 @@ public class Error_Handler {
 
         return true;
     } 
+    public static boolean checkAppointmentFields(String startTime, String endTime, String type, LocalDate localDate){
+         StringBuilder errors = new StringBuilder();
+
+        if (startTime ==null) {
+            errors.append("-Please Choose Start Time \n");
+
+        }
+        if (endTime == null) {
+            errors.append("-Please Choose End Time \n");
+        }
+        if (type == null) {
+            errors.append("-Please Choose Appointment Type \n");
+
+        }
+         if (localDate == null) {
+            errors.append("-Please Choose Date \n");
+
+        }
+         
+        if (errors.length() > 0) {
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("Required Fields Empty:");
+            alert.setContentText(errors.toString());
+
+            alert.showAndWait();
+            return false;
+        }
+        
+        return true;
+    }
+    
     static public void warningAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning!");
@@ -103,4 +138,5 @@ public class Error_Handler {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    
 }

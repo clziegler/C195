@@ -73,7 +73,7 @@
                               <ButtonBar layoutX="-10.0" layoutY="342.0" prefHeight="60.0" prefWidth="427.0">
                                  <buttons>
                                     <Button fx:id="newAppoitButton" mnemonicParsing="false" onAction="#newAppointButtonHandler" text="New Appointment" />
-                                    <Button fx:id="viewappointButton" mnemonicParsing="false" onAction="#veiwAppointButtonHandler" text="Vew/Modify" />
+                                    <Button fx:id="viewappointButton" mnemonicParsing="false" onAction="#veiwAppointButtonHandler" text="Modify" />
                                     <Button fx:id="deleteAppointButton" mnemonicParsing="false" onAction="#deleteAppointButtonHandler" prefHeight="27.0" prefWidth="151.0" text="Delete" />
                                  </buttons>
                               </ButtonBar>
@@ -86,9 +86,9 @@
                   <TextField fx:id="searcjAppointField" layoutX="350.0" layoutY="6.0" prefHeight="27.0" prefWidth="233.0" promptText="Search Appointmernts" />
                   <HBox layoutX="684.0" layoutY="14.0" prefHeight="18.0" prefWidth="200.0">
                      <children>
-                        <RadioButton fx:id="todayRadioButton" mnemonicParsing="false" onAction="#todayRadioButtonHandler" prefHeight="18.0" prefWidth="62.0" text="Today" />
-                        <RadioButton fx:id="weeklyRadioButton" mnemonicParsing="false" onAction="#weeklyRadioButtonHandler" prefHeight="18.0" prefWidth="69.0" text="Weekly" />
-                        <RadioButton fx:id="monthlyRadioButton" mnemonicParsing="false" onAction="#monthlyRadioButtonHandler" text="Monthly" />
+                        <RadioButton fx:id="todayRadioButton" mnemonicParsing="false" onAction="#radioButtonHandler" prefHeight="18.0" prefWidth="62.0" text="Today" />
+                        <RadioButton fx:id="weeklyRadioButton" mnemonicParsing="false" onAction="#radioButtonHandler" prefHeight="18.0" prefWidth="69.0" text="Weekly" />
+                        <RadioButton fx:id="monthlyRadioButton" mnemonicParsing="false" onAction="#radioButtonHandler" text="Monthly" />
                      </children>
                   </HBox>
                </children>

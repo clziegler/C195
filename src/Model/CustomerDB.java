@@ -24,7 +24,6 @@ import javafx.collections.ObservableList;
  * @author charlesziegler
  */
 public class CustomerDB {
-   private static  String activeUser = LoginController.loggedIn;
    public static ObservableList<Customer> customers = FXCollections.observableArrayList();
       
     private final DateTimeFormatter logTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss(z)");
@@ -93,8 +92,8 @@ public class CustomerDB {
                 stmt.setString(1, customer.getCity());
                 stmt.setInt(2, customer.getCountryId());
                 stmt.setTimestamp(3, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(4, activeUser);
-                 stmt.setString(5, activeUser);
+                stmt.setString(4, LoginController.loggedinUser.getName());
+                 stmt.setString(5, LoginController.loggedinUser.getName());
                 int row = stmt.executeUpdate();
                 System.out.println(row);
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -144,8 +143,8 @@ public class CustomerDB {
                 stmt.setString(4, customer.getPostalCode());
                 stmt.setString(5, customer.getPhone());
                 stmt.setTimestamp(6, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(7, activeUser);
-                stmt.setString(8, activeUser);
+                stmt.setString(7, LoginController.loggedinUser.getName());
+                stmt.setString(8, LoginController.loggedinUser.getName());
                 int row = stmt.executeUpdate();
                 System.out.println(row);
                 
@@ -183,7 +182,7 @@ public class CustomerDB {
                 stmt.setInt(2, customer.getAddressId());
                 stmt.setInt(3, 1);
                 stmt.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(5, activeUser);
+                stmt.setString(5, LoginController.loggedinUser.getName());
                 stmt.setInt(6, customer.getCustomerId());
                 int row = stmt.executeUpdate();
                 System.out.println(row);
@@ -200,9 +199,9 @@ public class CustomerDB {
                 stmt.setInt(2, customer.getAddressId());
                 stmt.setInt(3, 1);
                 stmt.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(5,"");
+                stmt.setString(5,LoginController.loggedinUser.getName());
                 stmt.setTimestamp(6, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(7, "");
+                stmt.setString(7, LoginController.loggedinUser.getName());
                 int row = stmt.executeUpdate();
                 System.out.println(row);
                        

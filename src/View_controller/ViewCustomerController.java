@@ -89,8 +89,6 @@ public class ViewCustomerController implements Initializable {
         
         if(Error_Handler.checkCustoemrFields(name, add1, add2, phone, city, country, post)){
             Customer customer = new Customer();
-            customer.setCustomerId(Integer.parseInt(custIDFiled.getText()));
-            System.out.println(Integer.parseInt(custIDFiled.getText()));
             customer.setName(name);
             customer.setAddress(add1);
             customer.setAddress2(add2);
