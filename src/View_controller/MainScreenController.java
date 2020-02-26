@@ -192,11 +192,16 @@ public class MainScreenController implements Initializable {
             Platform.runLater(() -> SearchCustField.selectAll());
         }
         
+        
     });
         searcjAppointField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
         if (isNowFocused) {
             Platform.runLater(() -> searcjAppointField.selectAll());
         }
+        /**
+        * Using lambda functions to listen to radio buttons
+        * to bind the Sorted list to the Table View
+        */
         
     });
         
@@ -215,6 +220,8 @@ public class MainScreenController implements Initializable {
             
     }));
         allRadioButton1.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+//             AppointmentDB.clearAppointments();
+             AppointmentDB.refreshAppointmentTable();
             
     }));
     }    

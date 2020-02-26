@@ -59,10 +59,8 @@ public class ViewAppointmentController implements Initializable {
     private ObservableList<String> startTimes;
     private ObservableList<String> endTimes;
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-    private final DateTimeFormatter dtfComboBox = DateTimeFormatter.ofPattern("h:mm a");
-    private final DateTimeFormatter dtfAppointment = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
-    private final DateTimeFormatter dtfAppt = DateTimeFormatter.ofPattern("M/d/yy h:mm a");
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+    private final DateTimeFormatter dateTimeformatComboBox = DateTimeFormatter.ofPattern("h:mm a");
+    private final DateTimeFormatter dtfAppoint = DateTimeFormatter.ofPattern("M/d/yy h:mm a");
     private final LocalDateTime ldt = LocalDateTime.now();
     private final ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
     private final ZonedDateTime gmt = zdt.withZoneSameInstant(ZoneId.of("GMT"));
@@ -106,10 +104,10 @@ public class ViewAppointmentController implements Initializable {
         descriptionTextArea.setText(appointment.getDescription());
         custId = appointment.getCustomerId();
         titleComboBox.setValue(appointment.getType());
-        LocalDateTime start = LocalDateTime.parse(appointment.getLocalStart(),dtfAppt);
-        LocalDateTime end = LocalDateTime.parse(appointment.getLocalEnd(),dtfAppt);
-        startTimeComboBox.setValue(dtfComboBox.format(start));
-        endTimeComboBox.setValue(dtfComboBox.format(end));
+        LocalDateTime start = LocalDateTime.parse(appointment.getLocalStart(),dtfAppoint);
+        LocalDateTime end = LocalDateTime.parse(appointment.getLocalEnd(),dtfAppoint);
+        startTimeComboBox.setValue(dateTimeformatComboBox.format(start));
+        endTimeComboBox.setValue(dateTimeformatComboBox.format(end));
         datePicker.setValue(start.toLocalDate());
         System.out.println(start);
         System.out.println(end);
@@ -163,7 +161,7 @@ public class ViewAppointmentController implements Initializable {
         LocalDate localDate = datePicker.getValue();
         String description = descriptionTextArea.getText();
         
-        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate)){
+        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate) && Error_Handler.verifyTimes(startTime, endTime)){
             System.out.println("all checked");
             
             Timestamp localStart = combineDateAndTime(startTime, localDate);

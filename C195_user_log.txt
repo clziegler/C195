@@ -135,3 +135,6 @@ User test logged into system at: 2020-02-25 at 11:20:24 PST
 User test logged into system at: 2020-02-25 at 11:22:42 PST
 User test logged into system at: 2020-02-25 at 11:28:27 PST
 User test logged into system at: 2020-02-25 at 12:25:22 PST
+User test logged into system at: 2020-02-25 at 12:30:32 PST
+User test logged into system at: 2020-02-25 at 12:34:13 PST
+User test logged into system at: 2020-02-25 at 18:40:16 PST

@@ -5,7 +5,7 @@
  */
 package C195;
 
-import Model.User;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,8 +16,10 @@ import View_controller.LoginController;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  *
@@ -25,6 +27,8 @@ import java.util.logging.Logger;
  */
 public class Main extends Application {
     public static Connection databaseConnection;
+    public ResourceBundle rb;
+    
     
     public static void userLog(String path){
         //creates file to log users
@@ -43,6 +47,8 @@ public class Main extends Application {
     
     @Override
     public void start(Stage stage) {
+//        Locale.setDefault(new Locale("en", "US"));
+        rb = ResourceBundle.getBundle("Language/lang");
         
         try {
             Parent root =  FXMLLoader.load(Main.class.getResource("/View_controller/Login.fxml"));

@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -39,20 +41,23 @@ public class LoginController implements Initializable {
     @FXML
     private AnchorPane userName;
     @FXML
-    private TextField usernameField;
+    private static TextField usernameField;
     @FXML
-    private PasswordField passwordField;
+    private static PasswordField passwordField;
     @FXML
-    private Button loginButton;
+    private static Button loginButton;
     @FXML
-    private Button quitButton;
+    private static Button quitButton;
     
 //    logging will always happen in Users Time zone
     private static final SimpleDateFormat logTime= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
     private static Date date = new Date(System.currentTimeMillis());
     public String dateToday = logTime.format(date);
+    private static ResourceBundle rb = ResourceBundle.getBundle("Language/lang", Locale.getDefault());
     
     public static User loggedinUser;
+    @FXML
+    private Text welcomeText;
 
     
 
@@ -61,8 +66,20 @@ public class LoginController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+//         welcomeText.setText(rb.getString("instructions"));
+      
         // TODO
-    }    
+    } 
+    public void setFields(){
+       
+        quitButton.setText(rb.getString("quit_button"));
+        loginButton.setText(rb.getString("login_button"));
+        usernameField.setPromptText(rb.getString("login_button"));
+        passwordField.setPromptText(rb.getString("password"));
+        
+        
+    }
 
     @FXML
     private void loginButtonHandler(ActionEvent event) throws IOException {
@@ -76,7 +93,7 @@ public class LoginController implements Initializable {
             authUser = loginAtempt(inputUser);
 //        Incorrect Login    
         if(authUser == null) { 
-            Error_Handler.warningAlert("Fail!");
+            Error_Handler.warningAlert(rb.getString("login_error_fail") );
         } else {
             //Login successful, set logged-in user
             loggedinUser = authUser;
@@ -84,9 +101,9 @@ public class LoginController implements Initializable {
             CustomerDB.refreshCustomerTable();
             AppointmentDB.refreshAppointmentTable();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("login_success_title");
-            alert.setHeaderText("login_success_header");
-            alert.setContentText("login_success_content");
+            alert.setTitle(rb.getString("loged_in_title") );
+            alert.setHeaderText(rb.getString("logged_in_header") );
+            alert.setContentText(rb.getString("loged_in_content") );
             alert.showAndWait();
             Parent newPartParent = FXMLLoader.load(getClass().getResource("MainScreen.fxml"));
             Scene newPartScene = new Scene(newPartParent);
@@ -135,5 +152,6 @@ public class LoginController implements Initializable {
         writer.write("User " + loggedinUser.getName() + " logged into system at: " + logTime.format(date));
         writer.close();
 }
+    
     
 }

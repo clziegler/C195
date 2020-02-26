@@ -7,6 +7,9 @@ package Utility;
 
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
@@ -17,24 +20,24 @@ import javafx.scene.control.Alert;
  * @author charlesziegler
  */
 public class Error_Handler {
-//    private static ResourceBundle rb = ResourceBundle.getBundle("lang", Locale.getDefault());
+    private static ResourceBundle rb = ResourceBundle.getBundle("Language/lang", Locale.getDefault());
      
      public static boolean checkLoginFields(String name, String password) {
         StringBuilder errors = new StringBuilder();
 
         if (name.trim().isEmpty()) {
-            errors.append("-Please Enter User Name \n");
+            errors.append(rb.getString("login_error_noname") + "\n");
 
         }
         if (password.trim().isEmpty()) {
-            errors.append("-Please Enter Password \n");
+            errors.append(rb.getString("login_error_nopassword") + "\n");
         }
         
         if (errors.length() > 0) {
 
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText("Required Fields Empty:");
+            alert.setTitle(rb.getString("login_warning"));
+            alert.setHeaderText(rb.getString("missing_fields"));
             alert.setContentText(errors.toString());
 
             alert.showAndWait();
@@ -45,17 +48,7 @@ public class Error_Handler {
         return true;
     } 
 
-    /**
-     *
-     * @param name
-     * @param add1
-     * @param add2
-     * @param phone
-     * @param city
-     * @param country
-     * @param postCode
-     * @return
-     */
+   
     public static boolean checkCustoemrFields(String name, String add1, String add2, String phone, String city, String country, String postCode) {
         StringBuilder errors = new StringBuilder();
 
@@ -137,6 +130,23 @@ public class Error_Handler {
         alert.setHeaderText("There may be an issue.");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    public static String verifyTimes(String startTime, String endTime) {
+        StringBuilder errors = new StringBuilder();
+        // Ensure timestamps are valid
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+        try {
+            LocalTime startLocal = LocalTime.parse(startTime, timeFormatter);
+            LocalTime endLocal = LocalTime.parse(endTime, timeFormatter);
+
+            // Ensure start time occurs before end time
+            if(startLocal.isAfter(endLocal)) {
+                errors.append("Start time occurs AFTER end time, please fix.");
+            }
+        } catch(Exception e) {
+            errors.append("Issue parsing time.  Very broken");
+        }
+        return errors.toString();
     }
     
 }
