@@ -131,22 +131,22 @@ public class Error_Handler {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    public static String verifyTimes(String startTime, String endTime) {
-        StringBuilder errors = new StringBuilder();
-        // Ensure timestamps are valid
+    public static Boolean verifyTimes(String startTime, String endTime) {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
         try {
             LocalTime startLocal = LocalTime.parse(startTime, timeFormatter);
             LocalTime endLocal = LocalTime.parse(endTime, timeFormatter);
 
             // Ensure start time occurs before end time
-            if(startLocal.isAfter(endLocal)) {
-                errors.append("Start time occurs AFTER end time, please fix.");
+            if(startLocal.isBefore(endLocal)) {
+                
+                return true;
             }
         } catch(Exception e) {
-            errors.append("Issue parsing time.  Very broken");
+            
         }
-        return errors.toString();
+            warningAlert("Start time is after end time");
+        return false;
     }
     
 }

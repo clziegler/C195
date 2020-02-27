@@ -188,6 +188,10 @@ public class Appointment {
     public StringProperty contactProperty() {
         return contact;
     }
+     @Override
+    public String toString(){
+        return type +" at " + localStart + " with "+ custName;
+    }
     
     
     

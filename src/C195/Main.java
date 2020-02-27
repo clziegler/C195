@@ -51,7 +51,7 @@ public class Main extends Application {
         rb = ResourceBundle.getBundle("Language/lang");
         
         try {
-            Parent root =  FXMLLoader.load(Main.class.getResource("/View_controller/Login.fxml"));
+            Parent root =  FXMLLoader.load(Main.class.getResource("/View_controller/UserLogin.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Customer Calendar");

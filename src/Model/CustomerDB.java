@@ -10,7 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
-import View_controller.LoginController;
+import View_controller.UserLoginController;
 import com.mysql.jdbc.Statement;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,7 +48,7 @@ public class CustomerDB {
                 stmt.setString(3, "");
                 stmt.setString(4, "");
                 int row = stmt.executeUpdate();
-                System.out.println(row);
+                System.out.println("Country "+ row);
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         customer.setCountryId(generatedKeys.getInt(1));
@@ -89,10 +89,10 @@ public class CustomerDB {
                 stmt.setString(1, customer.getCity());
                 stmt.setInt(2, customer.getCountryId());
                 stmt.setTimestamp(3, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(4, LoginController.loggedinUser.getName());
-                 stmt.setString(5, LoginController.loggedinUser.getName());
+                stmt.setString(4, UserLoginController.loggedinUser.getName());
+                 stmt.setString(5, UserLoginController.loggedinUser.getName());
                 int row = stmt.executeUpdate();
-                System.out.println(row);
+                System.out.println("city" + row);
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         customer.setCityId(generatedKeys.getInt(1));
@@ -140,10 +140,10 @@ public class CustomerDB {
                 stmt.setString(4, customer.getPostalCode());
                 stmt.setString(5, customer.getPhone());
                 stmt.setTimestamp(6, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(7, LoginController.loggedinUser.getName());
-                stmt.setString(8, LoginController.loggedinUser.getName());
+                stmt.setString(7, UserLoginController.loggedinUser.getName());
+                stmt.setString(8, UserLoginController.loggedinUser.getName());
                 int row = stmt.executeUpdate();
-                System.out.println(row);
+                System.out.println("Address " + row);
                 
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
@@ -179,10 +179,10 @@ public class CustomerDB {
                 stmt.setInt(2, customer.getAddressId());
                 stmt.setInt(3, 1);
                 stmt.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(5, LoginController.loggedinUser.getName());
+                stmt.setString(5, UserLoginController.loggedinUser.getName());
                 stmt.setInt(6, customer.getCustomerId());
                 int row = stmt.executeUpdate();
-                System.out.println(row);
+                System.out.println("Customer " + row);
                          
             } else {
                 addCountry(customer);
@@ -196,9 +196,9 @@ public class CustomerDB {
                 stmt.setInt(2, customer.getAddressId());
                 stmt.setInt(3, 1);
                 stmt.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(5,LoginController.loggedinUser.getName());
+                stmt.setString(5,UserLoginController.loggedinUser.getName());
                 stmt.setTimestamp(6, new java.sql.Timestamp(System.currentTimeMillis()));
-                stmt.setString(7, LoginController.loggedinUser.getName());
+                stmt.setString(7, UserLoginController.loggedinUser.getName());
                 int row = stmt.executeUpdate();
                 System.out.println(row);
                        

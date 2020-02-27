@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package View_controller;
 
 
@@ -25,6 +20,7 @@ import javafx.stage.Modality;
 import Model.Customer;
 import Model.CustomerDB;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.function.Predicate;
 import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
@@ -95,13 +91,19 @@ public class MainScreenController implements Initializable {
     @FXML
     private RadioButton allRadioButton1;
     private ToggleGroup tg;
+    ArrayList<Appointment> newAppointments = new ArrayList();
+   
+    
     
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        userText.setText(LoginController.loggedinUser.getName());
+        userText.setText(UserLoginController.loggedinUser.getName());
+        checkAppointment();
+        
+        
         
         tg = new ToggleGroup();
         this.todayRadioButton.setToggleGroup(tg);
@@ -183,7 +185,7 @@ public class MainScreenController implements Initializable {
             });
             SortedList<Appointment> sortedAppointmentData = new SortedList<>(filteredAppointment);
             sortedAppointmentData.comparatorProperty().bind(appointTableView.comparatorProperty());
-           appointTableView.setItems(sortedAppointmentData);
+            appointTableView.setItems(sortedAppointmentData);
         });
         
 //        Highlight text in textfiled for faster delete on re-entry
@@ -220,11 +222,29 @@ public class MainScreenController implements Initializable {
             
     }));
         allRadioButton1.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-//             AppointmentDB.clearAppointments();
              AppointmentDB.refreshAppointmentTable();
             
     }));
-    }    
+    }
+    private void checkAppointment(){
+         StringBuilder urgent= new StringBuilder();
+        if(!AppointmentDB.appointmentsNow.isEmpty()){
+           for (Appointment i : AppointmentDB.appointmentsNow){
+               urgent.append(i.toString() + "\n");
+               
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText("Upcoming appointment/s");
+            alert.setContentText(urgent.toString());
+
+            alert.showAndWait();
+           
+           }
+           
+           
+       };
+        
+    }
 
     @FXML
     private void quitButtonHandler(ActionEvent event) {
@@ -312,6 +332,7 @@ public class MainScreenController implements Initializable {
 
                 CustomerDB.deleteCustomer(customer);
                 CustomerDB.refreshCustomerTable();
+                AppointmentDB.refreshAppointmentTable();
 
             } else {
                 System.out.println("You clicked cancel.");
@@ -398,7 +419,7 @@ public class MainScreenController implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
 
-                AppointmentDB.deleteAppointment(appointment);
+               AppointmentDB.deleteAppointment(appointment);
                AppointmentDB.refreshAppointmentTable();
 
             } else {
@@ -410,7 +431,7 @@ public class MainScreenController implements Initializable {
 
     private void todayRadioButtonHandler(ActionEvent event) {
         System.out.println("You clicked today radio.");
-        AppointmentDB.getDayAppointments();
+//       
     
     }
 

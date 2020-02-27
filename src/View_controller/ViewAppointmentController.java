@@ -67,6 +67,7 @@ public class ViewAppointmentController implements Initializable {
     private final Timestamp timestamp = Timestamp.valueOf(gmt.toLocalDateTime());
     public static ObservableList<String> appointmentTypes = FXCollections.observableArrayList();
     private int custId;
+    private int appointId;
 
     /**
      * Initializes the controller class.
@@ -76,6 +77,7 @@ public class ViewAppointmentController implements Initializable {
         startTimes = FXCollections.observableArrayList();
         endTimes = FXCollections.observableArrayList();
         descriptionTextArea.setWrapText(true);
+        appointmentTypes.clear();
         createTypes();
         
         createTimes();
@@ -91,7 +93,6 @@ public class ViewAppointmentController implements Initializable {
              "Introductory appoointment",
              "Follow up appointment",
              "Custommer feedback",
-             "Blame Assignment",
              "Other"
      };
      appointmentTypes.addAll(types);
@@ -99,6 +100,7 @@ public class ViewAppointmentController implements Initializable {
      }
      
     public void setAppointment(Appointment appointment){
+        appointId = appointment.getAppointmentId();
         customerNameText.setText(appointment.getCustName());
         descriptionTextArea.setPromptText("Add Description of Appointment");
         descriptionTextArea.setText(appointment.getDescription());
@@ -154,6 +156,8 @@ public class ViewAppointmentController implements Initializable {
 
     @FXML
     private void modifyAppointmentButtonHandler(ActionEvent event) {
+        System.out.println("you clicked modify customer button");
+       
         
         String startTime = startTimeComboBox.getValue();
         String endTime = endTimeComboBox.getValue();
@@ -168,8 +172,9 @@ public class ViewAppointmentController implements Initializable {
             Timestamp localEnd = combineDateAndTime(endTime, localDate);
             
             Appointment appointment = new Appointment();
+            appointment.setAppointmentId(appointId);
             appointment.setCustomerId(custId);
-            appointment.setUserId(LoginController.loggedinUser.getID());
+            appointment.setUserId(UserLoginController.loggedinUser.getID());
             appointment.setType(type);
             appointment.setDescription(description);
             appointment.setStart(localStart.toString());

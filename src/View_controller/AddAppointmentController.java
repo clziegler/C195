@@ -84,6 +84,7 @@ public class AddAppointmentController implements Initializable {
         endTimes = FXCollections.observableArrayList();
         descriptionTextArea.setWrapText(true);
         descriptionTextArea.setPromptText("Add Description of Appointment");
+        appointmentTypes.clear();
         createTimes();
         createtypes();
     
@@ -102,7 +103,6 @@ public class AddAppointmentController implements Initializable {
              "Introductory appoointment",
              "Follow up appointment",
              "Custommer feedback",
-             "Blame Assignment",
              "Other"
      };
      appointmentTypes.addAll(types);
@@ -151,7 +151,7 @@ public class AddAppointmentController implements Initializable {
             System.out.println(custId);
            
         
-        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate)){
+        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate) && Error_Handler.verifyTimes(startTime, endTime)){
             System.out.println("all checked");
             
             Timestamp localStart = combineDateAndTime(startTime, localDate);
@@ -160,7 +160,7 @@ public class AddAppointmentController implements Initializable {
             
             Appointment appointment = new Appointment();
             appointment.setCustomerId(custId);
-            appointment.setUserId(LoginController.loggedinUser.getID());
+            appointment.setUserId(UserLoginController.loggedinUser.getID());
             appointment.setType(type);
             appointment.setDescription(description);
             appointment.setStart(localStart.toString());
