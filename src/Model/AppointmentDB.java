@@ -29,12 +29,15 @@ import javafx.collections.ObservableList;
 public class AppointmentDB {
     public static  ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     public static ArrayList<Appointment> appointmentsNow = new ArrayList();
+    public static Timestamp ts = Timestamp.valueOf(LocalDateTime.now());
+    
+    private static DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss");
     private static DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT ).withZone(ZoneId.of("Z"));
-    private static Timestamp ts = Timestamp.valueOf(LocalDateTime.now());
     private static LocalDateTime ldt = ts.toLocalDateTime();
     private static ZonedDateTime zdt = ldt.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
     private static ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
     private static LocalDateTime ldtIn = utczdt.toLocalDateTime();
+    private static ZonedDateTime zdtOut = ldtIn.atZone(ZoneId.of("UTC"));
 
     
     
@@ -110,13 +113,14 @@ public class AppointmentDB {
         String query;
         
         try{
-            query = "SELECT appointment.title, customer.customerName, appointment.start " +
+            query = "SELECT appointment.title, customer.customerName, appointment.start FROM appointment " +
                     "Inner JOIN customer ON appointment.customerId = customer.customerId "+
-                    "WHERE aapointment.start BETWEEN ? and?;";
-            stmt = Main.databaseConnection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                    "WHERE appointment.start >= DATE_FORMAT('"+ldtIn.minusMinutes(15).toString()+"', '%Y-%m-%d %T') "+
+                    "AND appointment.start <= DATE_FORMAT('"+ldtIn.plusMinutes(15).toString()+"', '%Y-%m-%d %T');";
+            stmt = Main.databaseConnection.prepareStatement(query);
             ResultSet rs = stmt.executeQuery(query);
-            stmt.setTimestamp(1, Timestamp.valueOf(ldtIn.minusMinutes(15)));
-            stmt.setTimestamp(2, Timestamp.valueOf(ldtIn.plusMinutes(15)));
+//            stmt.setTimestamp(1, Timestamp.valueOf(ldtIn.minusMinutes(15)));
+//            stmt.setTimestamp(2, Timestamp.valueOf(ldtIn.plusMinutes(15)));
             
            while(rs.next()) {
                 Appointment appointment = new Appointment();
@@ -127,6 +131,7 @@ public class AppointmentDB {
                 appointment.setStart(startInstant.toString());
                 appointment.setLocalStart(start);
                 appointmentsNow.add(appointment);
+//                System.out.println(Timestamp.valueOf(formatter1.format(zdtOut.minusMinutes(15))).toString());
                 
                 
             }
@@ -172,8 +177,10 @@ public class AppointmentDB {
                 appointment.setEnd(endInstant.toString());
                 appointment.setLocalEnd(end);
                 appointment.setCustName(rs.getString("customer.customerName"));
+               
               
                 appointments.add(appointment);
+               
                 
             }
         } catch (SQLException e) {
@@ -184,6 +191,12 @@ public class AppointmentDB {
     }
     //Gewt today's appointments
     public static void getDayAppointments() {
+//         System.out.println(ldtIn.plusMinutes(15).toString());
+         System.out.println("SELECT appointment.title, customer.customerName, appointment.start FROM appointment " +
+                    "Inner JOIN customer ON appointment.customerId = customer.customerId "+
+                    "WHERE appointment.start >= DATE_FORMAT('"+ldtIn.minusMinutes(15).toString()+"', '%Y-%m-%d %T') "+
+                    "AND appointment.start <= DATE_FORMAT('"+ldtIn.plusMinutes(15).toString()+"', '%Y-%m-%d %T');");
+         
         PreparedStatement stmt;
         String query;
        
@@ -196,7 +209,6 @@ public class AppointmentDB {
         "WHERE DATE(appointment.start) =DATE(?);";
             stmt = Main.databaseConnection.prepareStatement(query);
             stmt.setTimestamp(1, Timestamp.valueOf(ldtIn));
-//            stmt.setTimestamp(2, Timestamp.valueOf(ldtIn));
                     
         
             ResultSet rs = stmt.executeQuery();

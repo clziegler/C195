@@ -126,7 +126,6 @@ public class CustomerDB {
                 System.out.println("Known Address");
                 int addressId = rs.getInt("addressID");
                 customer.setAddressId(addressId);
-//                customer.setCountryId(rs.getInt(1))
                 return customer;
                         
             } else {

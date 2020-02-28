@@ -91,7 +91,7 @@ public class MainScreenController implements Initializable {
     @FXML
     private RadioButton allRadioButton1;
     private ToggleGroup tg;
-    ArrayList<Appointment> newAppointments = new ArrayList();
+    private ArrayList<Appointment> newAppointments = AppointmentDB.appointmentsNow;
    
     
     
@@ -101,7 +101,7 @@ public class MainScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         userText.setText(UserLoginController.loggedinUser.getName());
-        checkAppointment();
+//        checkAppointment();
         
         
         
@@ -226,10 +226,18 @@ public class MainScreenController implements Initializable {
             
     }));
     }
-    private void checkAppointment(){
-         StringBuilder urgent= new StringBuilder();
-        if(!AppointmentDB.appointmentsNow.isEmpty()){
-           for (Appointment i : AppointmentDB.appointmentsNow){
+    public void checkAppointment(){
+        newAppointments.clear();
+        AppointmentDB.getNextAppointment();
+        StringBuilder urgent= new StringBuilder();
+        System.out.println("chekcing for appointments...");
+          for (Appointment i : newAppointments){
+              System.out.println(i.toString());
+          }
+         
+        if(!newAppointments.isEmpty()){
+            System.out.println("no appointments");
+           for (Appointment i : newAppointments){
                urgent.append(i.toString() + "\n");
                
             Alert alert = new Alert(Alert.AlertType.WARNING);

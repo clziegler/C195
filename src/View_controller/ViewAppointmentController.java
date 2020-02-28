@@ -111,8 +111,8 @@ public class ViewAppointmentController implements Initializable {
         startTimeComboBox.setValue(dateTimeformatComboBox.format(start));
         endTimeComboBox.setValue(dateTimeformatComboBox.format(end));
         datePicker.setValue(start.toLocalDate());
-        System.out.println(start);
-        System.out.println(end);
+//        System.out.println(start);
+//        System.out.println(end);
 
         
      }

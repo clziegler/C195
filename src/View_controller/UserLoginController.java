@@ -34,6 +34,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -103,11 +104,16 @@ public class UserLoginController implements Initializable {
             alert.setHeaderText(rb.getString("logged_in_header") );
             alert.setContentText(rb.getString("loged_in_content") );
             alert.showAndWait();
-            Parent newPartParent = FXMLLoader.load(getClass().getResource("/View_controller/MainScreen.fxml"));
-            Scene newPartScene = new Scene(newPartParent);
-            Stage app_stage = new Stage();
-            app_stage.setScene(newPartScene);
-            app_stage.showAndWait();
+            Stage stage = new Stage();
+            Parent root;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("MainScreen.fxml"));
+            root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+            MainScreenController controller = loader.getController();
+//            controller.checkAppointment();;
             }
         } 
     }
