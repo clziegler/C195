@@ -12,7 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import Utility.Database;
-import View_controller.LoginController;
+import View_controller.UserLoginController;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -41,7 +41,7 @@ public class Main extends Application {
                 System.out.println("Existing log found: " + path);
             }
         } catch (IOException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserLoginController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -54,7 +54,7 @@ public class Main extends Application {
             Parent root =  FXMLLoader.load(Main.class.getResource("/View_controller/UserLogin.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("Customer Calendar");
+            stage.setTitle("Appointment Creator");
             stage.show();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);

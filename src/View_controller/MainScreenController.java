@@ -101,7 +101,8 @@ public class MainScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         userText.setText(UserLoginController.loggedinUser.getName());
-        checkAppointment();
+       
+       AppointmentDB.getNextAppointment();
         
         
         
@@ -200,6 +201,7 @@ public class MainScreenController implements Initializable {
         if (isNowFocused) {
             Platform.runLater(() -> searcjAppointField.selectAll());
         }
+        
         /**
         * Using lambda functions to listen to radio buttons
         * to bind the Sorted list to the Table View
@@ -226,25 +228,28 @@ public class MainScreenController implements Initializable {
             
     }));
     }
-    private void checkAppointment(){
-         StringBuilder urgent= new StringBuilder();
-        if(!AppointmentDB.appointmentsNow.isEmpty()){
-           for (Appointment i : AppointmentDB.appointmentsNow){
-               urgent.append(i.toString() + "\n");
-               
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText("Upcoming appointment/s");
-            alert.setContentText(urgent.toString());
-
-            alert.showAndWait();
-           
-           }
-           
-           
-       };
-        
-    }
+//    private void checkAppointment(){
+//        
+//        System.out.println("Checking for appointments...");
+//        
+//        StringBuilder urgent= new StringBuilder();
+//        AppointmentDB.getNextAppointment();
+//        if(!AppointmentDB.appointmentsNow.isEmpty()){
+//           for (Appointment i : AppointmentDB.appointmentsNow){
+//               urgent.append(i.toString() + "\n");
+//               
+//            Alert alert = new Alert(Alert.AlertType.WARNING);
+//            alert.setTitle("Warning");
+//            alert.setHeaderText("Upcoming appointment/s");
+//            alert.setContentText(urgent.toString());
+//
+//            alert.showAndWait();
+//           
+//           }   
+//           
+//       };
+//        
+//    }
 
     @FXML
     private void quitButtonHandler(ActionEvent event) {
@@ -371,7 +376,6 @@ public class MainScreenController implements Initializable {
     @FXML
     private void veiwAppointButtonHandler(ActionEvent event) throws IOException {
         System.out.println("You clicked view appointment.");
-        System.out.println("You Clicked view customerButton");
         Appointment appointment = appointTableView.getSelectionModel().getSelectedItem();
         if(appointment == null){
             Alert error = new Alert(Alert.AlertType.ERROR);

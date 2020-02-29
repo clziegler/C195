@@ -126,8 +126,8 @@ public class Error_Handler {
     
     static public void warningAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Warning!");
-        alert.setHeaderText("There may be an issue.");
+        alert.setTitle(rb.getString("login_warning"));
+        alert.setHeaderText(rb.getString("login_error_fail"));
         alert.setContentText(message);
         alert.showAndWait();
     }

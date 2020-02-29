@@ -125,9 +125,10 @@ public class AddAppointmentController implements Initializable {
      private Timestamp combineDateAndTime(String time, LocalDate date) {
         LocalTime localTime = LocalTime.parse(time, timeFormatter);
         LocalDateTime localConverted = LocalDateTime.of(date, localTime);
-        
-        ZonedDateTime utcZoned = localConverted.atZone(ZoneId.of("UTC"));
-        Timestamp utcTimeStamped = Timestamp.from(utcZoned.toInstant());
+        ZonedDateTime zdt = localConverted.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+        ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
+        LocalDateTime ldtIn = utczdt.toLocalDateTime();
+        Timestamp utcTimeStamped = Timestamp.valueOf(ldtIn);
         return utcTimeStamped;
      }
 
@@ -156,7 +157,6 @@ public class AddAppointmentController implements Initializable {
             
             Timestamp localStart = combineDateAndTime(startTime, localDate);
             Timestamp localEnd = combineDateAndTime(endTime, localDate);
-//            System.out.println(localStart.toString()+ " " + localEnd.toString() + " " + type + " " +String.valueOf(custId));
             
             Appointment appointment = new Appointment();
             appointment.setCustomerId(custId);

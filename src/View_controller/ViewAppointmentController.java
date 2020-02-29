@@ -111,17 +111,16 @@ public class ViewAppointmentController implements Initializable {
         startTimeComboBox.setValue(dateTimeformatComboBox.format(start));
         endTimeComboBox.setValue(dateTimeformatComboBox.format(end));
         datePicker.setValue(start.toLocalDate());
-        System.out.println(start);
-        System.out.println(end);
-
+        
         
      }
      private Timestamp combineDateAndTime(String time, LocalDate date) {
         LocalTime localTime = LocalTime.parse(time, timeFormatter);
         LocalDateTime localConverted = LocalDateTime.of(date, localTime);
-        
-        ZonedDateTime utcZoned = localConverted.atZone(ZoneId.of("UTC"));
-        Timestamp utcTimeStamped = Timestamp.from(utcZoned.toInstant());
+        ZonedDateTime zdt = localConverted.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+        ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
+        LocalDateTime ldtIn = utczdt.toLocalDateTime();
+        Timestamp utcTimeStamped = Timestamp.valueOf(ldtIn);
         return utcTimeStamped;
      }
      

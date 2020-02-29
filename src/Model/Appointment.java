@@ -190,7 +190,7 @@ public class Appointment {
     }
      @Override
     public String toString(){
-        return type +" at " + localStart + " with "+ custName;
+        return type.get() +" at " + localStart.get() + " with "+ custName.get();
     }
     
     

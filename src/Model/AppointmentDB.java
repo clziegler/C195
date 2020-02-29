@@ -7,7 +7,6 @@ package Model;
 
 import C195.Main;
 import View_controller.UserLoginController;
-import java.time.Instant;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +20,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 
 /**
  *
@@ -30,11 +30,30 @@ public class AppointmentDB {
     public static  ObservableList<Appointment> appointments = FXCollections.observableArrayList();
     public static ArrayList<Appointment> appointmentsNow = new ArrayList();
     private static DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT ).withZone(ZoneId.of("Z"));
-    private static Timestamp ts = Timestamp.valueOf(LocalDateTime.now());
-    private static LocalDateTime ldt = ts.toLocalDateTime();
-    private static ZonedDateTime zdt = ldt.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
-    private static ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
-    private static LocalDateTime ldtIn = utczdt.toLocalDateTime();
+    
+    
+    private static LocalDateTime convertToLocal(Timestamp timestamp) {
+        LocalDateTime ldt = timestamp.toLocalDateTime();
+        ZonedDateTime zdt = ldt.atZone(ZoneId.of(ZoneId.of("UTC").toString()));
+        LocalDateTime ldtIn = zdt.toLocalDateTime();
+        ZonedDateTime zdtOut = ldtIn.atZone(ZoneId.of("UTC"));
+        ZonedDateTime zdtOutToLocalTZ = zdtOut.withZoneSameInstant(ZoneId.of(ZoneId.systemDefault().toString()));
+        LocalDateTime ldtOutFinal = zdtOutToLocalTZ.toLocalDateTime();
+        
+        return ldtOutFinal;
+        
+        
+    }
+    
+    private static LocalDateTime convertToUTC(){
+        Timestamp ts = Timestamp.valueOf(LocalDateTime.now());
+        LocalDateTime ldt = ts.toLocalDateTime();
+        ZonedDateTime zdt = ldt.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+        ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
+        LocalDateTime ldtUTC = utczdt.toLocalDateTime();
+        
+        return ldtUTC;
+    }
 
     
     
@@ -106,28 +125,29 @@ public class AppointmentDB {
     }
      //Checking if there is an appointment within 15 min is before and after login.
      public static void getNextAppointment(){
+        appointmentsNow.clear();
+        LocalDateTime time = convertToUTC();
+           
         PreparedStatement stmt;
         String query;
         
         try{
-            query = "SELECT appointment.title, customer.customerName, appointment.start " +
+            query = "SELECT appointment.title, customer.customerName, appointment.start FROM appointment " +
                     "Inner JOIN customer ON appointment.customerId = customer.customerId "+
-                    "WHERE aapointment.start BETWEEN ? and?;";
-            stmt = Main.databaseConnection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                    "WHERE start >= '"+Timestamp.valueOf(time.minusMinutes(15)).toString()+
+                    "' AND start <= '"+Timestamp.valueOf(time.plusMinutes(15)).toString()+"';";
+            stmt = Main.databaseConnection.prepareStatement(query);
             ResultSet rs = stmt.executeQuery(query);
-            stmt.setTimestamp(1, Timestamp.valueOf(ldtIn.minusMinutes(15)));
-            stmt.setTimestamp(2, Timestamp.valueOf(ldtIn.plusMinutes(15)));
             
            while(rs.next()) {
                 Appointment appointment = new Appointment();
                 appointment.setType(rs.getString("appointment.title"));
                 appointment.setCustName(rs.getString("customer.customerName"));
-                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
-                String start = formatter.format( startInstant );
-                appointment.setStart(startInstant.toString());
+                Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
+                String start = formatter.format(convertToLocal(fromUTCStart));
+                appointment.setStart(convertToLocal(fromUTCStart).toString());
                 appointment.setLocalStart(start);
-                appointmentsNow.add(appointment);
-                
+                appointmentsNow.add(appointment);     
                 
             }
             
@@ -135,7 +155,27 @@ public class AppointmentDB {
             System.out.println("Issue with SQL");
             e.printStackTrace();
         }
-     
+        
+        System.out.println("Checking for appointments...");
+        
+        StringBuilder urgent= new StringBuilder();
+        
+        
+           for (int i = 0; i< appointmentsNow.size(); i++){
+                urgent.append(appointmentsNow.get(i).toString() + "\n");
+           }
+            
+            if (urgent.length() > 0) {   
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning");
+                alert.setHeaderText("Upcoming appointment/s");
+                alert.setContentText(urgent.toString());
+
+                alert.showAndWait();
+            };
+           
+               
+  
      
      }
      
@@ -163,13 +203,13 @@ public class AppointmentDB {
                 appointment.setDescription(rs.getString("appointment.description"));
                 appointment.setLocation(rs.getString("appointment.location"));
                 appointment.setContact(rs.getString("appointment.contact"));
-                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
-                String start = formatter.format( startInstant );
-                appointment.setStart(startInstant.toString());
+                Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
+                String start = formatter.format(convertToLocal(fromUTCStart));
+                appointment.setStart(convertToLocal(fromUTCStart).toString());
                 appointment.setLocalStart(start);
-                Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
-                String end = formatter.format( endInstant );
-                appointment.setEnd(endInstant.toString());
+                Timestamp fromUTCEnd = rs.getTimestamp("appointment.end");
+                String end = formatter.format(convertToLocal(fromUTCEnd));
+                appointment.setEnd(convertToLocal(fromUTCEnd).toString());
                 appointment.setLocalEnd(end);
                 appointment.setCustName(rs.getString("customer.customerName"));
               
@@ -184,19 +224,20 @@ public class AppointmentDB {
     }
     //Gewt today's appointments
     public static void getDayAppointments() {
+        LocalDateTime time = convertToUTC();
         PreparedStatement stmt;
         String query;
-       
+        
 
         try {
             query =  "SELECT appointment.appointmentId, appointment.customerId, appointment.title, "+
 	"appointment.description, appointment.start, appointment.end, appointment.createdBy, "+ 
 	"appointment.location, appointment.contact, customer.customerName "+
 	"FROM appointment Inner JOIN customer ON appointment.customerId = customer.customerId "+
-        "WHERE DATE(appointment.start) =DATE(?);";
+        "WHERE DATE(appointment.start) = DATE(?);";
             stmt = Main.databaseConnection.prepareStatement(query);
-            stmt.setTimestamp(1, Timestamp.valueOf(ldtIn));
-//            stmt.setTimestamp(2, Timestamp.valueOf(ldtIn));
+            stmt.setTimestamp(1, Timestamp.valueOf(time));
+//          
                     
         
             ResultSet rs = stmt.executeQuery();
@@ -208,15 +249,17 @@ public class AppointmentDB {
                 appointment.setDescription(rs.getString("appointment.description"));
                 appointment.setLocation(rs.getString("appointment.location"));
                 appointment.setContact(rs.getString("appointment.contact"));
-                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
-                String start = formatter.format( startInstant );
-                appointment.setStart(startInstant.toString());
+                Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
+                String start = formatter.format(convertToLocal(fromUTCStart));
+                appointment.setStart(convertToLocal(fromUTCStart).toString());
                 appointment.setLocalStart(start);
-                Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
-                String end = formatter.format( endInstant );
-                appointment.setEnd(endInstant.toString());
+                Timestamp fromUTCEnd = rs.getTimestamp("appointment.end");
+                String end = formatter.format(convertToLocal(fromUTCEnd));
+                appointment.setEnd(convertToLocal(fromUTCEnd).toString());
                 appointment.setLocalEnd(end);
                 appointment.setCustName(rs.getString("customer.customerName"));
+                System.out.println(time);
+        
                 
                 appointments.add(appointment);
                 
@@ -229,6 +272,7 @@ public class AppointmentDB {
     }
     //GEt this weeks appointments
     public static void getWeekAppointments() {
+        LocalDateTime time = convertToUTC();
         PreparedStatement stmt;
         String query;
        
@@ -240,7 +284,7 @@ public class AppointmentDB {
 	"FROM appointment Inner JOIN customer ON appointment.customerId = customer.customerId "+
         "WHERE YEARWEEK(DATE(appointment.start)) = YEARWEEK(DATE(?));";
             stmt = Main.databaseConnection.prepareStatement(query);
-            stmt.setTimestamp(1, Timestamp.valueOf(ldtIn));
+            stmt.setTimestamp(1, Timestamp.valueOf(time));
                     
         
             ResultSet rs = stmt.executeQuery();
@@ -252,13 +296,13 @@ public class AppointmentDB {
                 appointment.setDescription(rs.getString("appointment.description"));
                 appointment.setLocation(rs.getString("appointment.location"));
                 appointment.setContact(rs.getString("appointment.contact"));
-                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
-                String start = formatter.format( startInstant );
-                appointment.setStart(startInstant.toString());
+                Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
+                String start = formatter.format(convertToLocal(fromUTCStart));
+                appointment.setStart(convertToLocal(fromUTCStart).toString());
                 appointment.setLocalStart(start);
-                Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
-                String end = formatter.format( endInstant );
-                appointment.setEnd(endInstant.toString());
+                Timestamp fromUTCEnd = rs.getTimestamp("appointment.end");
+                String end = formatter.format(convertToLocal(fromUTCEnd));
+                appointment.setEnd(convertToLocal(fromUTCEnd).toString());
                 appointment.setLocalEnd(end);
                 appointment.setCustName(rs.getString("customer.customerName"));
                
@@ -273,6 +317,7 @@ public class AppointmentDB {
     }
     //Get THIS months appoitments
     public static void getMonthAppointments() {
+        LocalDateTime time = convertToUTC();
         PreparedStatement stmt;
         String query;
        
@@ -284,8 +329,8 @@ public class AppointmentDB {
 	"FROM appointment Inner JOIN customer ON appointment.customerId = customer.customerId "+
         "WHERE MONTH(start) = MONTH(DATE(?)) AND YEAR(start) = YEAR(DATE(?));";
             stmt = Main.databaseConnection.prepareStatement(query);
-            stmt.setTimestamp(1, Timestamp.valueOf(ldtIn));
-            stmt.setTimestamp(2, Timestamp.valueOf(ldtIn));
+            stmt.setTimestamp(1, Timestamp.valueOf(time));
+            stmt.setTimestamp(2, Timestamp.valueOf(time));
                     
         
             ResultSet rs = stmt.executeQuery();
@@ -297,13 +342,13 @@ public class AppointmentDB {
                 appointment.setDescription(rs.getString("appointment.description"));
                 appointment.setLocation(rs.getString("appointment.location"));
                 appointment.setContact(rs.getString("appointment.contact"));
-                Instant startInstant = rs.getTimestamp("appointment.start").toInstant();
-                String start = formatter.format( startInstant );
-                appointment.setStart(startInstant.toString());
+                Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
+                String start = formatter.format(convertToLocal(fromUTCStart));
+                appointment.setStart(convertToLocal(fromUTCStart).toString());
                 appointment.setLocalStart(start);
-                Instant endInstant = rs.getTimestamp("appointment.end").toInstant();
-                String end = formatter.format( endInstant );
-                appointment.setEnd(endInstant.toString());
+                Timestamp fromUTCEnd = rs.getTimestamp("appointment.end");
+                String end = formatter.format(convertToLocal(fromUTCEnd));
+                appointment.setEnd(convertToLocal(fromUTCEnd).toString());
                 appointment.setLocalEnd(end);
                 appointment.setCustName(rs.getString("customer.customerName"));
                

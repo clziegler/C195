@@ -10,7 +10,6 @@ import Model.AppointmentDB;
 import Model.CustomerDB;
 import Model.User;
 import Utility.Error_Handler;
-import static View_controller.LoginController.loggedinUser;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,7 +21,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -67,7 +65,7 @@ public class UserLoginController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-         rb = ResourceBundle.getBundle("Language/lang", Locale.getDefault());
+        rb = ResourceBundle.getBundle("Language/lang", Locale.getDefault());
         loginButton.requestFocus();
         welcomeText.setText(rb.getString("instructions"));
         quitButton.setText(rb.getString("quit_button"));
@@ -103,10 +101,10 @@ public class UserLoginController implements Initializable {
             alert.setHeaderText(rb.getString("logged_in_header") );
             alert.setContentText(rb.getString("loged_in_content") );
             alert.showAndWait();
-            Parent newPartParent = FXMLLoader.load(getClass().getResource("/View_controller/MainScreen.fxml"));
-            Scene newPartScene = new Scene(newPartParent);
+            Parent newParent = FXMLLoader.load(getClass().getResource("/View_controller/MainScreen.fxml"));
+            Scene newScene = new Scene(newParent);
             Stage app_stage = new Stage();
-            app_stage.setScene(newPartScene);
+            app_stage.setScene(newScene);
             app_stage.showAndWait();
             }
         } 

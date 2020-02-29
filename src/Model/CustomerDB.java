@@ -90,7 +90,7 @@ public class CustomerDB {
                 stmt.setInt(2, customer.getCountryId());
                 stmt.setTimestamp(3, new java.sql.Timestamp(System.currentTimeMillis()));
                 stmt.setString(4, UserLoginController.loggedinUser.getName());
-                 stmt.setString(5, UserLoginController.loggedinUser.getName());
+                stmt.setString(5, UserLoginController.loggedinUser.getName());
                 int row = stmt.executeUpdate();
                 System.out.println("city" + row);
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
