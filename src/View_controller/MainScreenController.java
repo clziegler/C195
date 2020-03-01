@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package View_controller;
 
-import C195.Main;
+
+import Model.Appointment;
+import Model.AppointmentDB;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -18,15 +15,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import Model.Customer;
 import Model.CustomerDB;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.function.Predicate;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXMLLoader;
@@ -35,7 +31,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
+
 
 /**
  * FXML Controller class
@@ -67,8 +65,6 @@ public class MainScreenController implements Initializable {
     @FXML
     private TextField searcjAppointField;
     @FXML
-    private RadioButton todayRadioButton;
-    @FXML
     private RadioButton weeklyRadioButton;
     @FXML
     private RadioButton monthlyRadioButton;
@@ -79,24 +75,42 @@ public class MainScreenController implements Initializable {
     @FXML
     private TableColumn<Customer, String> custPhoneCol;
     @FXML
-    private TableColumn<?, ?> appointTypeCol;
+    private TableColumn<Appointment, String> appointTypeCol;
     @FXML
-    private TableColumn<?, ?> custAppointCol;
+    private TableColumn<Appointment, String> custAppointCol;
     @FXML
-    private TableColumn<?, ?> appointStartCol;
+    private TableColumn<Appointment, String> appointStartCol;
     @FXML
-     TableView<Customer> custTableView;
+    TableView<Customer> custTableView;
     @FXML
-    private TableView<?> appointTableView;
+    private TableView<Appointment> appointTableView;
     @FXML
-    private TableColumn<?, ?> appointEndCol;
+    private TableColumn<Appointment, String> appointEndCol;
+    @FXML
+    private RadioButton allRadioButton1;
+    private ToggleGroup tg;
+    ArrayList<Appointment> newAppointments = new ArrayList();
+   
+    
     
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        userText.setText(LoginController.loggedIn);
+        userText.setText(UserLoginController.loggedinUser.getName());
+       
+       AppointmentDB.getNextAppointment();
+       AppointmentDB.getAppointmentTypeNumber();
+        
+        
+        
+        tg = new ToggleGroup();
+        this.weeklyRadioButton.setToggleGroup(tg);
+        this.monthlyRadioButton.setToggleGroup(tg);
+        this.allRadioButton1.setToggleGroup(tg);
+        allRadioButton1.setSelected(true);
+        
         
      
 //     Lambda Expressions here for custom rendering of table cells
@@ -110,14 +124,14 @@ public class MainScreenController implements Initializable {
         custTableView.setItems(CustomerDB.customers);
         
 
-        appointTypeCol.setCellValueFactory(new PropertyValueFactory<>("appointType"));
-        custAppointCol.setCellValueFactory(new PropertyValueFactory<>("custName"));
-        appointStartCol.setCellValueFactory(new PropertyValueFactory<>("startTime"));
-        appointEndCol.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+        appointTypeCol.setCellValueFactory(cellData -> {return cellData.getValue().typeProperty();});
+        custAppointCol.setCellValueFactory(cellData -> {return cellData.getValue().custNameProperty();});
+        appointStartCol.setCellValueFactory((cellData -> {return cellData.getValue().localStartProperty();}));
+        appointEndCol.setCellValueFactory((cellData -> {return cellData.getValue().localEndProperty();}));
         
-        appointTableView.setPlaceholder(new Label("Click  \"New Appointment\"  to add an Appointment"));
+        appointTableView.setPlaceholder(new Label("Select Custoemer and click \"New Appointment\"  to add an Appointment"));
         appointTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        appointTableView.setItems(CustomerDB.getAllCustomers());
+        appointTableView.setItems(AppointmentDB.appointments);
         
         /**
         * Here I am using 2 lambda expressions: 1 to wrap customer data in a filtered list, and the other
@@ -147,8 +161,66 @@ public class MainScreenController implements Initializable {
             sortedCustomerData.comparatorProperty().bind(custTableView.comparatorProperty());
             custTableView.setItems(sortedCustomerData);
         });
-        // TODO
-    }    
+        FilteredList<Appointment> filteredAppointment = new FilteredList<>(AppointmentDB.appointments, e -> true);
+        searcjAppointField.setOnKeyPressed(e -> {
+            searcjAppointField.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredAppointment.setPredicate((Predicate<? super Appointment>) appointment ->{
+                    if(newValue == null || newValue.isEmpty()){
+                        return true;
+                    }
+                    String lowerCaseFilter = newValue.toLowerCase();
+                    if(appointment.getCustName().toLowerCase().contains(newValue)){
+                        return true;
+                    }else if(appointment.getType().toLowerCase().contains(lowerCaseFilter)){
+                        return true; 
+                    }else if(appointment.getStart().toLowerCase().contains(newValue)){
+                        return true;
+                    }else if(appointment.getEnd().toLowerCase().contains(newValue)){
+                        return true;
+                    } 
+                   
+                    return false;
+                });
+            });
+            SortedList<Appointment> sortedAppointmentData = new SortedList<>(filteredAppointment);
+            sortedAppointmentData.comparatorProperty().bind(appointTableView.comparatorProperty());
+            appointTableView.setItems(sortedAppointmentData);
+        });
+        
+//        Highlight text in textfiled for faster delete on re-entry
+        SearchCustField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+        if (isNowFocused) {
+            Platform.runLater(() -> SearchCustField.selectAll());
+        }
+        
+        
+    });
+        searcjAppointField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+        if (isNowFocused) {
+            Platform.runLater(() -> searcjAppointField.selectAll());
+        }
+        
+        /**
+        * Using lambda functions to listen to radio buttons
+        * to bind the Sorted list to the Table View
+        */
+        
+    });
+        
+        weeklyRadioButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            AppointmentDB.clearAppointments();
+            AppointmentDB.getWeekAppointments();
+    }));
+       monthlyRadioButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            AppointmentDB.clearAppointments();
+            AppointmentDB.getMonthAppointments();
+            
+    }));
+        allRadioButton1.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+             AppointmentDB.refreshAppointmentTable();
+            
+    }));
+    }
 
     @FXML
     private void quitButtonHandler(ActionEvent event) {
@@ -168,14 +240,19 @@ public class MainScreenController implements Initializable {
     }
 
     @FXML
-    private void generateReportHandler(ActionEvent event) {
+    private void generateReportHandler(ActionEvent event) throws IOException {
         System.out.println("You clicked report.");
+        Parent newPartParent = FXMLLoader.load(getClass().getResource("Reports.fxml"));
+        Scene newPartScene = new Scene(newPartParent);
+        Stage app_stage = new Stage();
+        app_stage.initModality(Modality.APPLICATION_MODAL);
+        app_stage.setScene(newPartScene);
+        app_stage.showAndWait();
     }
 
     @FXML
     private void newCustomerButtonHandler(ActionEvent event) throws IOException {
         System.out.println("You clicked add customer.");
-        CustomerDB.refreshCustomerTable();
         
         Parent newPartParent = FXMLLoader.load(getClass().getResource("AddCustomer.fxml"));
         Scene newPartScene = new Scene(newPartParent);
@@ -187,7 +264,7 @@ public class MainScreenController implements Initializable {
 
     @FXML
     private void viewCustButtonHandler(ActionEvent event) throws IOException {
-        System.out.println("You Clicked Modify Part Button");
+        System.out.println("You Clicked view customerButton");
         Customer customer = custTableView.getSelectionModel().getSelectedItem();
         if(customer == null){
             Alert error = new Alert(Alert.AlertType.ERROR);
@@ -237,6 +314,7 @@ public class MainScreenController implements Initializable {
 
                 CustomerDB.deleteCustomer(customer);
                 CustomerDB.refreshCustomerTable();
+                AppointmentDB.refreshAppointmentTable();
 
             } else {
                 System.out.println("You clicked cancel.");
@@ -246,34 +324,107 @@ public class MainScreenController implements Initializable {
     }
 
     @FXML
-    private void newAppointButtonHandler(ActionEvent event) {
-        System.out.println("You clicked add appointment.");
+    private void newAppointButtonHandler(ActionEvent event) throws IOException {
+        Customer customer = custTableView.getSelectionModel().getSelectedItem();
+        if(customer == null){
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.setTitle("Error");
+            error.setHeaderText("No Customer Selected");
+            error.setContentText("Select A Customer");
+            error.showAndWait();
+        }
+        else{
+            System.out.println("You clicked add appointment.");
+             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            Parent root;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("AddAppointment.fxml"));
+            root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+            AddAppointmentController controller = loader.getController();
+            controller.setCustomer(customer);
+            controller.setCustomerId(customer);
+        }
     }
 
     @FXML
-    private void veiwAppointButtonHandler(ActionEvent event) {
+    private void veiwAppointButtonHandler(ActionEvent event) throws IOException {
         System.out.println("You clicked view appointment.");
+        Appointment appointment = appointTableView.getSelectionModel().getSelectedItem();
+        if(appointment == null){
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.setTitle("Error");
+            error.setHeaderText("No Appointment Selected");
+            error.setContentText("Select an Appointment To Modify");
+            error.showAndWait();
+        }
+       
+        else{
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            Parent root;
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ViewAppointment.fxml"));
+            root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+            ViewAppointmentController controller = loader.getController();
+            controller.setAppointment(appointment);
+        }
+        
+        
     }
 
     @FXML
     private void deleteAppointButtonHandler(ActionEvent event) {
         System.out.println("You clicked delete appointment.");
+        Appointment appointment = appointTableView.getSelectionModel().getSelectedItem();
+        if(appointment == null){
+            Alert error = new Alert(Alert.AlertType.ERROR);
+            error.setTitle("Error");
+            error.setHeaderText("No Appointment Selected");
+            error.setContentText("Select Appointment To Delete");
+            error.showAndWait();
+        }
+        else{
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initModality(Modality.NONE);
+            alert.setTitle("Confirm Delete");
+            alert.setHeaderText("Are you sure you want to delete?");
+            alert.setContentText("Deleting is a permanent action.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+
+               AppointmentDB.deleteAppointment(appointment);
+               AppointmentDB.refreshAppointmentTable();
+
+            } else {
+                System.out.println("You clicked cancel.");
+            
+            }
+        }
     }
 
-    @FXML
-    private void todayRadioButtonHandler(ActionEvent event) {
-        System.out.println("You clicked today radio.");
-    }
 
-    @FXML
     private void weeklyRadioButtonHandler(ActionEvent event) {
         System.out.println("You clicked weekly radio.");
     }
 
-    @FXML
     private void monthlyRadioButtonHandler(ActionEvent event) {
          System.out.println("You clicked monthly radio.");
     }
 
-    
+    @FXML
+    private void radioButtonHandler(ActionEvent event) {
+         
+        
+        
+         
+        
+    }  
 }
