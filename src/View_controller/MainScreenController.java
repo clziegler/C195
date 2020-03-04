@@ -65,8 +65,6 @@ public class MainScreenController implements Initializable {
     @FXML
     private TextField searcjAppointField;
     @FXML
-    private RadioButton todayRadioButton;
-    @FXML
     private RadioButton weeklyRadioButton;
     @FXML
     private RadioButton monthlyRadioButton;
@@ -83,7 +81,7 @@ public class MainScreenController implements Initializable {
     @FXML
     private TableColumn<Appointment, String> appointStartCol;
     @FXML
-     TableView<Customer> custTableView;
+    TableView<Customer> custTableView;
     @FXML
     private TableView<Appointment> appointTableView;
     @FXML
@@ -103,11 +101,11 @@ public class MainScreenController implements Initializable {
         userText.setText(UserLoginController.loggedinUser.getName());
        
        AppointmentDB.getNextAppointment();
+       AppointmentDB.getAppointmentTypeNumber();
         
         
         
         tg = new ToggleGroup();
-        this.todayRadioButton.setToggleGroup(tg);
         this.weeklyRadioButton.setToggleGroup(tg);
         this.monthlyRadioButton.setToggleGroup(tg);
         this.allRadioButton1.setToggleGroup(tg);
@@ -163,8 +161,8 @@ public class MainScreenController implements Initializable {
             sortedCustomerData.comparatorProperty().bind(custTableView.comparatorProperty());
             custTableView.setItems(sortedCustomerData);
         });
-         FilteredList<Appointment> filteredAppointment = new FilteredList<>(AppointmentDB.appointments, e -> true);
-       searcjAppointField.setOnKeyPressed(e -> {
+        FilteredList<Appointment> filteredAppointment = new FilteredList<>(AppointmentDB.appointments, e -> true);
+        searcjAppointField.setOnKeyPressed(e -> {
             searcjAppointField.textProperty().addListener((observable, oldValue, newValue) -> {
                 filteredAppointment.setPredicate((Predicate<? super Appointment>) appointment ->{
                     if(newValue == null || newValue.isEmpty()){
@@ -209,11 +207,6 @@ public class MainScreenController implements Initializable {
         
     });
         
-        todayRadioButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-            AppointmentDB.clearAppointments();
-            AppointmentDB.getDayAppointments();
-    }));
-
         weeklyRadioButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             AppointmentDB.clearAppointments();
             AppointmentDB.getWeekAppointments();
@@ -228,28 +221,6 @@ public class MainScreenController implements Initializable {
             
     }));
     }
-//    private void checkAppointment(){
-//        
-//        System.out.println("Checking for appointments...");
-//        
-//        StringBuilder urgent= new StringBuilder();
-//        AppointmentDB.getNextAppointment();
-//        if(!AppointmentDB.appointmentsNow.isEmpty()){
-//           for (Appointment i : AppointmentDB.appointmentsNow){
-//               urgent.append(i.toString() + "\n");
-//               
-//            Alert alert = new Alert(Alert.AlertType.WARNING);
-//            alert.setTitle("Warning");
-//            alert.setHeaderText("Upcoming appointment/s");
-//            alert.setContentText(urgent.toString());
-//
-//            alert.showAndWait();
-//           
-//           }   
-//           
-//       };
-//        
-//    }
 
     @FXML
     private void quitButtonHandler(ActionEvent event) {
@@ -269,8 +240,14 @@ public class MainScreenController implements Initializable {
     }
 
     @FXML
-    private void generateReportHandler(ActionEvent event) {
+    private void generateReportHandler(ActionEvent event) throws IOException {
         System.out.println("You clicked report.");
+        Parent newPartParent = FXMLLoader.load(getClass().getResource("Reports.fxml"));
+        Scene newPartScene = new Scene(newPartParent);
+        Stage app_stage = new Stage();
+        app_stage.initModality(Modality.APPLICATION_MODAL);
+        app_stage.setScene(newPartScene);
+        app_stage.showAndWait();
     }
 
     @FXML
@@ -380,8 +357,8 @@ public class MainScreenController implements Initializable {
         if(appointment == null){
             Alert error = new Alert(Alert.AlertType.ERROR);
             error.setTitle("Error");
-            error.setHeaderText("No Customer Selected");
-            error.setContentText("Select A Customer To Modify");
+            error.setHeaderText("No Appointment Selected");
+            error.setContentText("Select an Appointment To Modify");
             error.showAndWait();
         }
        
@@ -433,11 +410,6 @@ public class MainScreenController implements Initializable {
         }
     }
 
-    private void todayRadioButtonHandler(ActionEvent event) {
-        System.out.println("You clicked today radio.");
-//       
-    
-    }
 
     private void weeklyRadioButtonHandler(ActionEvent event) {
         System.out.println("You clicked weekly radio.");

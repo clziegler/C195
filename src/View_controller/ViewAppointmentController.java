@@ -3,6 +3,7 @@ package View_controller;
 
 import Model.Appointment;
 import Model.AppointmentDB;
+import Model.AppointmentTypes;
 import Model.Customer;
 import Utility.Error_Handler;
 import java.net.URL;
@@ -61,13 +62,12 @@ public class ViewAppointmentController implements Initializable {
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
     private final DateTimeFormatter dateTimeformatComboBox = DateTimeFormatter.ofPattern("h:mm a");
     private final DateTimeFormatter dtfAppoint = DateTimeFormatter.ofPattern("M/d/yy h:mm a");
-    private final LocalDateTime ldt = LocalDateTime.now();
-    private final ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
-    private final ZonedDateTime gmt = zdt.withZoneSameInstant(ZoneId.of("GMT"));
-    private final Timestamp timestamp = Timestamp.valueOf(gmt.toLocalDateTime());
     public static ObservableList<String> appointmentTypes = FXCollections.observableArrayList();
+    private String startBox;
+    private String endBox;
     private int custId;
     private int appointId;
+    private LocalDate dateBox;
 
     /**
      * Initializes the controller class.
@@ -89,13 +89,8 @@ public class ViewAppointmentController implements Initializable {
      }
 
      private void createTypes() {
-     String[] types = {
-             "Introductory appoointment",
-             "Follow up appointment",
-             "Custommer feedback",
-             "Other"
-     };
-     appointmentTypes.addAll(types);
+     String[] type = AppointmentTypes.type;
+     appointmentTypes.addAll(type);
      titleComboBox.setItems(appointmentTypes);
      }
      
@@ -109,23 +104,27 @@ public class ViewAppointmentController implements Initializable {
         LocalDateTime start = LocalDateTime.parse(appointment.getLocalStart(),dtfAppoint);
         LocalDateTime end = LocalDateTime.parse(appointment.getLocalEnd(),dtfAppoint);
         startTimeComboBox.setValue(dateTimeformatComboBox.format(start));
+        startBox = dateTimeformatComboBox.format(start).toString();
+        endBox = dateTimeformatComboBox.format(end).toString();
         endTimeComboBox.setValue(dateTimeformatComboBox.format(end));
         datePicker.setValue(start.toLocalDate());
+        dateBox = start.toLocalDate();
+        
         
         
      }
      private Timestamp combineDateAndTime(String time, LocalDate date) {
         LocalTime localTime = LocalTime.parse(time, timeFormatter);
         LocalDateTime localConverted = LocalDateTime.of(date, localTime);
-        ZonedDateTime zdt = localConverted.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
-        ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime zdtConvert = localConverted.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+        ZonedDateTime utczdt = zdtConvert.withZoneSameInstant(ZoneId.of("UTC"));
         LocalDateTime ldtIn = utczdt.toLocalDateTime();
         Timestamp utcTimeStamped = Timestamp.valueOf(ldtIn);
         return utcTimeStamped;
      }
      
      private void createTimes() {
-        // Set up times
+        // Set up combobox times
         LocalTime time = LocalTime.of(8, 0);
         do {
             startTimes.add(time.format(timeFormatter));
@@ -164,31 +163,49 @@ public class ViewAppointmentController implements Initializable {
         LocalDate localDate = datePicker.getValue();
         String description = descriptionTextArea.getText();
         
-        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate) && Error_Handler.verifyTimes(startTime, endTime)){
+        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate) && Error_Handler.checkStartEndTimes(startTime, endTime)){
             System.out.println("all checked");
             
             Timestamp localStart = combineDateAndTime(startTime, localDate);
             Timestamp localEnd = combineDateAndTime(endTime, localDate);
+            //If time does not change do not check for overlap
+            if (startBox.equals(startTime) && endBox.equals(endTime) && dateBox.isEqual(localDate)){
+           
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(appointId);
+                appointment.setCustomerId(custId);
+                appointment.setUserId(UserLoginController.loggedinUser.getID());
+                appointment.setType(type);
+                appointment.setDescription(description);
+                appointment.setStart(localStart.toString());
+                appointment.setEnd(localEnd.toString());
+                System.out.println(appointment.customerIdProperty());
+                AppointmentDB.addAppointment(appointment);
+                AppointmentDB.refreshAppointmentTable();
+
+                Node node = (Node)event.getSource();
+                Stage stage = (Stage)node.getScene().getWindow();
+                stage.close();
+             }else if (Error_Handler.checkOverlap(localStart, localEnd)){
+                System.out.println("No overlaps");
+                Appointment appointment = new Appointment();
+                appointment.setAppointmentId(appointId);
+                appointment.setCustomerId(custId);
+                appointment.setUserId(UserLoginController.loggedinUser.getID());
+                appointment.setType(type);
+                appointment.setDescription(description);
+                appointment.setStart(localStart.toString());
+                appointment.setEnd(localEnd.toString());
+                System.out.println(appointment.customerIdProperty());
+                AppointmentDB.addAppointment(appointment);
+                AppointmentDB.refreshAppointmentTable();
+
+                Node node = (Node)event.getSource();
+                Stage stage = (Stage)node.getScene().getWindow();
+                stage.close();
             
-            Appointment appointment = new Appointment();
-            appointment.setAppointmentId(appointId);
-            appointment.setCustomerId(custId);
-            appointment.setUserId(UserLoginController.loggedinUser.getID());
-            appointment.setType(type);
-            appointment.setDescription(description);
-            appointment.setStart(localStart.toString());
-            appointment.setEnd(localEnd.toString());
-            System.out.println(appointment.customerIdProperty());
-            AppointmentDB.addAppointment(appointment);
-            AppointmentDB.refreshAppointmentTable();
-            
-            Node node = (Node)event.getSource();
-            Stage stage = (Stage)node.getScene().getWindow();
-            stage.close();
-            
-            
+            }
         }
     }
-    
     
 }

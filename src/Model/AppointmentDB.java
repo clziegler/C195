@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package Model;
 
 import C195.Main;
@@ -18,6 +14,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -31,8 +28,12 @@ public class AppointmentDB {
     public static ArrayList<Appointment> appointmentsNow = new ArrayList();
     private static DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT ).withZone(ZoneId.of("Z"));
     
-    
-    private static LocalDateTime convertToLocal(Timestamp timestamp) {
+    /**
+    *
+     * @param timestamp
+     * @return 
+    */
+    public static LocalDateTime convertToLocal(Timestamp timestamp) {
         LocalDateTime ldt = timestamp.toLocalDateTime();
         ZonedDateTime zdt = ldt.atZone(ZoneId.of(ZoneId.of("UTC").toString()));
         LocalDateTime ldtIn = zdt.toLocalDateTime();
@@ -54,9 +55,20 @@ public class AppointmentDB {
         
         return ldtUTC;
     }
-
-    
-    
+     public static LocalDateTime convertLDTToUTC(LocalDateTime time){
+        Timestamp ts = Timestamp.valueOf(time);
+        LocalDateTime ldt = ts.toLocalDateTime();
+        ZonedDateTime zdt = ldt.atZone(ZoneId.of(ZoneId.systemDefault().toString()));
+        ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
+        LocalDateTime ldtTimeUTC = utczdt.toLocalDateTime();
+        
+        return ldtTimeUTC;
+    }
+    /**
+    *
+     * @param appointment
+    *@param Appointment object
+    */ 
     public static void addAppointment(Appointment appointment) {
         PreparedStatement stmt;
         String query;
@@ -111,6 +123,11 @@ public class AppointmentDB {
             e.printStackTrace();
         }
     }
+    
+    /**
+    *
+     * @param appointment
+    */ 
      public static void deleteAppointment(Appointment appointment) {
         PreparedStatement stmt;
         try {
@@ -123,7 +140,8 @@ public class AppointmentDB {
             e.printStackTrace();
         }
     }
-     //Checking if there is an appointment within 15 min is before and after login.
+     //Checking if there is an appointment within 15 min is before and after login. Only checking start time
+     //
      public static void getNextAppointment(){
         appointmentsNow.clear();
         LocalDateTime time = convertToUTC();
@@ -132,7 +150,7 @@ public class AppointmentDB {
         String query;
         
         try{
-            query = "SELECT appointment.title, customer.customerName, appointment.start FROM appointment " +
+            query = "SELECT appointment.title, customer.customerName, appointment.start, appointment.createdBy FROM appointment " +
                     "Inner JOIN customer ON appointment.customerId = customer.customerId "+
                     "WHERE start >= '"+Timestamp.valueOf(time.minusMinutes(15)).toString()+
                     "' AND start <= '"+Timestamp.valueOf(time.plusMinutes(15)).toString()+"';";
@@ -143,6 +161,7 @@ public class AppointmentDB {
                 Appointment appointment = new Appointment();
                 appointment.setType(rs.getString("appointment.title"));
                 appointment.setCustName(rs.getString("customer.customerName"));
+                appointment.setUserName(rs.getString("createdBy"));
                 Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
                 String start = formatter.format(convertToLocal(fromUTCStart));
                 appointment.setStart(convertToLocal(fromUTCStart).toString());
@@ -222,55 +241,8 @@ public class AppointmentDB {
         }
        
     }
-    //Gewt today's appointments
-    public static void getDayAppointments() {
-        LocalDateTime time = convertToUTC();
-        PreparedStatement stmt;
-        String query;
-        
-
-        try {
-            query =  "SELECT appointment.appointmentId, appointment.customerId, appointment.title, "+
-	"appointment.description, appointment.start, appointment.end, appointment.createdBy, "+ 
-	"appointment.location, appointment.contact, customer.customerName "+
-	"FROM appointment Inner JOIN customer ON appointment.customerId = customer.customerId "+
-        "WHERE DATE(appointment.start) = DATE(?);";
-            stmt = Main.databaseConnection.prepareStatement(query);
-            stmt.setTimestamp(1, Timestamp.valueOf(time));
-//          
-                    
-        
-            ResultSet rs = stmt.executeQuery();
-            while(rs.next()) {
-                Appointment appointment = new Appointment();
-                appointment.setAppointmentId(rs.getInt("appointment.appointmentId"));
-                appointment.setCustomerId(rs.getInt("appointment.customerId"));
-                appointment.setType(rs.getString("appointment.title"));
-                appointment.setDescription(rs.getString("appointment.description"));
-                appointment.setLocation(rs.getString("appointment.location"));
-                appointment.setContact(rs.getString("appointment.contact"));
-                Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
-                String start = formatter.format(convertToLocal(fromUTCStart));
-                appointment.setStart(convertToLocal(fromUTCStart).toString());
-                appointment.setLocalStart(start);
-                Timestamp fromUTCEnd = rs.getTimestamp("appointment.end");
-                String end = formatter.format(convertToLocal(fromUTCEnd));
-                appointment.setEnd(convertToLocal(fromUTCEnd).toString());
-                appointment.setLocalEnd(end);
-                appointment.setCustName(rs.getString("customer.customerName"));
-                System.out.println(time);
-        
-                
-                appointments.add(appointment);
-                
-            }
-        } catch (SQLException e) {
-            System.out.println("Issue with SQL");
-            e.printStackTrace();
-        }
-       
-    }
-    //GEt this weeks appointments
+    
+    //Get this weeks appointments
     public static void getWeekAppointments() {
         LocalDateTime time = convertToUTC();
         PreparedStatement stmt;
@@ -361,6 +333,122 @@ public class AppointmentDB {
         }
        
     }
+    public static List getAppointmentTypeNumber(){
+        LocalDateTime time = convertToUTC();
+        ArrayList<Integer> typeList = new ArrayList();
+        ObservableList<String> types = FXCollections.observableArrayList();
+        PreparedStatement stmt;
+        String query;
+        
+        String[] type = AppointmentTypes.type;
+     types.addAll(type);
+     try {
+     
+        for (int i = 0; i < types.size(); i++){
+           query = "SELECT count(*) FROM appointment "+ 
+                   "WHERE MONTH(start) = MONTH(DATE(?)) AND YEAR(start) = YEAR(DATE(?)) "+
+                   "AND type =? ;";
+
+           stmt = Main.databaseConnection.prepareStatement(query);
+           stmt.setTimestamp(1, Timestamp.valueOf(time));
+           stmt.setTimestamp(2, Timestamp.valueOf(time));
+           stmt.setString(3, types.get(i));
+           ResultSet rs = stmt.executeQuery();
+           while (rs.next()){
+               int count = rs.getInt(1);
+           typeList.add(count);
+            }   
+        }
+     }catch (SQLException e) {
+            System.out.println("Issue with SQL");
+            e.printStackTrace();
+        }
+            
+     return typeList;
+    }
+    
+    /**
+    *
+    *@return List
+    */ 
+    public static List getUserAppointmentNumber(){
+        ArrayList<Integer> userAppointmentList = new ArrayList();
+        ObservableList<String> types = FXCollections.observableArrayList();
+        types.add("test");
+        types.add("chuck");
+        PreparedStatement stmt;
+        String query;
+        
+     try {
+     
+        for (int i = 0; i < types.size(); i++){
+           query = "SELECT count(*) FROM appointment "+ 
+                   "WHERE createdBy = ?";
+                   
+
+           stmt = Main.databaseConnection.prepareStatement(query);
+           stmt.setString(1, types.get(i));
+           ResultSet rs = stmt.executeQuery();
+           while (rs.next()){
+               int count = rs.getInt(1);
+           userAppointmentList.add(count);
+            }   
+        }
+     }catch (SQLException e) {
+            System.out.println("Issue with SQL");
+            e.printStackTrace();
+        }
+            
+    
+   
+     return userAppointmentList;
+    }
+    
+    /**
+    *
+    * Getting schedule for users, ordered by user name and appointment start time
+    *@return ObservableList<Appointment>
+    */ 
+    public static ObservableList<Appointment> getUserScedule(){
+        ObservableList<Appointment> userSchedule = FXCollections.observableArrayList();
+        
+           
+        PreparedStatement stmt;
+        String query;
+        
+        try{
+            query = "SELECT appointment.title, customer.customerName, appointment.start, appointment.createdBy FROM appointment " +
+                    "Inner JOIN customer ON appointment.customerId = customer.customerId "+
+                    "order by appointment.createdBy asc, appointment.start asc;";
+                    
+            stmt = Main.databaseConnection.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery(query);
+            
+           while(rs.next()) {
+                Appointment appointment = new Appointment();
+                appointment.setType(rs.getString("appointment.title"));
+                appointment.setCustName(rs.getString("customer.customerName"));
+                appointment.setUserName(rs.getString("createdBy"));
+                Timestamp fromUTCStart = rs.getTimestamp("appointment.start");
+                String start = formatter.format(convertToLocal(fromUTCStart));
+                appointment.setStart(convertToLocal(fromUTCStart).toString());
+                appointment.setLocalStart(start);  
+                appointment.setUserSchedule(appointment.toString());
+                
+               userSchedule.add(appointment);
+               
+                
+            }
+            
+            } catch (SQLException e) {
+            System.out.println("Issue with SQL");
+            e.printStackTrace();
+        }
+         
+        return userSchedule;
+     }
+    
+    
     public static void clearAppointments(){
         appointments.clear();
     }

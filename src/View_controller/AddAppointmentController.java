@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package View_controller;
 
 import Model.Appointment;
 import Model.AppointmentDB;
+import Model.AppointmentTypes;
 import Model.Customer;
 import Utility.Error_Handler;
 import java.net.URL;
@@ -62,13 +58,9 @@ public class AddAppointmentController implements Initializable {
     private ObservableList<String> startTimes;
     private ObservableList<String> endTimes;
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-    private final DateTimeFormatter dtfComboBox = DateTimeFormatter.ofPattern("h:mm a");
-    private final DateTimeFormatter dtfAppointment = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm a");
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
     private final LocalDateTime ldt = LocalDateTime.now();
     private final ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
     private final ZonedDateTime gmt = zdt.withZoneSameInstant(ZoneId.of("GMT"));
-    private final Timestamp timestamp = Timestamp.valueOf(gmt.toLocalDateTime());
     private Customer customer;
     private int custId;
     public static ObservableList<String> appointmentTypes = FXCollections.observableArrayList();
@@ -99,18 +91,13 @@ public class AddAppointmentController implements Initializable {
          return custId = customer.getCustomerId();
      }
     private void createtypes() {
-     String[] types = {
-             "Introductory appoointment",
-             "Follow up appointment",
-             "Custommer feedback",
-             "Other"
-     };
-     appointmentTypes.addAll(types);
-     titleComboBox.setItems(appointmentTypes);
+        String[] type = AppointmentTypes.type;
+        appointmentTypes.addAll(type);
+        titleComboBox.setItems(appointmentTypes);
        
     }
      private void createTimes() {
-        // Set up times
+        // Set up combobox times
         LocalTime time = LocalTime.of(8, 0);
         do {
             startTimes.add(time.format(timeFormatter));
@@ -129,6 +116,7 @@ public class AddAppointmentController implements Initializable {
         ZonedDateTime utczdt = zdt.withZoneSameInstant(ZoneId.of("UTC"));
         LocalDateTime ldtIn = utczdt.toLocalDateTime();
         Timestamp utcTimeStamped = Timestamp.valueOf(ldtIn);
+         System.out.println(utcTimeStamped);
         return utcTimeStamped;
      }
 
@@ -152,26 +140,28 @@ public class AddAppointmentController implements Initializable {
             System.out.println(custId);
            
         
-        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate) && Error_Handler.verifyTimes(startTime, endTime)){
-            System.out.println("all checked");
+        if (Error_Handler.checkAppointmentFields(startTime, endTime, type, localDate) && Error_Handler.checkStartEndTimes(startTime, endTime)){
+            System.out.println("Valid fields");
             
             Timestamp localStart = combineDateAndTime(startTime, localDate);
             Timestamp localEnd = combineDateAndTime(endTime, localDate);
+            if (Error_Handler.checkOverlap(localStart, localEnd)){
+                System.out.println("No overlaps");
             
-            Appointment appointment = new Appointment();
-            appointment.setCustomerId(custId);
-            appointment.setUserId(UserLoginController.loggedinUser.getID());
-            appointment.setType(type);
-            appointment.setDescription(description);
-            appointment.setStart(localStart.toString());
-            appointment.setEnd(localEnd.toString());
-            AppointmentDB.addAppointment(appointment);
-            AppointmentDB.refreshAppointmentTable();
-            
-            Node node = (Node)event.getSource();
-            Stage stage = (Stage)node.getScene().getWindow();
-            stage.close();
-            
+                Appointment appointment = new Appointment();
+                appointment.setCustomerId(custId);
+                appointment.setUserId(UserLoginController.loggedinUser.getID());
+                appointment.setType(type);
+                appointment.setDescription(description);
+                appointment.setStart(localStart.toString());
+                appointment.setEnd(localEnd.toString());
+                AppointmentDB.addAppointment(appointment);
+                AppointmentDB.refreshAppointmentTable();
+
+                Node node = (Node)event.getSource();
+                Stage stage = (Stage)node.getScene().getWindow();
+                stage.close();
+            }
             
         }
     }

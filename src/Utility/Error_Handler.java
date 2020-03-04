@@ -6,13 +6,17 @@
 package Utility;
 
 
+import Model.Appointment;
+import Model.AppointmentDB;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javafx.collections.ObservableList;
+
 import javafx.scene.control.Alert;
 
 /**
@@ -131,22 +135,63 @@ public class Error_Handler {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    public static Boolean verifyTimes(String startTime, String endTime) {
+    
+    public static Boolean checkStartEndTimes(String startTime, String endTime) {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
         try {
-            LocalTime startLocal = LocalTime.parse(startTime, timeFormatter);
-            LocalTime endLocal = LocalTime.parse(endTime, timeFormatter);
+            LocalTime start = LocalTime.parse(startTime, timeFormatter);
+            LocalTime end = LocalTime.parse(endTime, timeFormatter);
 
             // Ensure start time occurs before end time
-            if(startLocal.isBefore(endLocal)) {
+            if(start.isBefore(end)) {
                 
                 return true;
             }
         } catch(Exception e) {
+            System.out.println("Something strange haopoened here...");
             
         }
-            warningAlert("Start time is after end time");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning");
+                alert.setHeaderText("Start Time is After End TIme:");
+                alert.setContentText("Please Choose a Start Time Before End Time");
         return false;
+    }
+    
+    /**
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    public static Boolean checkOverlap(Timestamp start, Timestamp end){
+        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("M/d/yy h:mm a");
+        for (Appointment check : AppointmentDB.appointments){
+            LocalDateTime newStart = start.toLocalDateTime();
+            LocalDateTime newEnd = end.toLocalDateTime();
+            LocalDateTime checkStartParsed = LocalDateTime.parse(check.getLocalStart(), formatter1);
+            LocalDateTime checkEndParsed =  LocalDateTime.parse(check.getLocalEnd(), formatter1);
+            LocalDateTime checkStart = AppointmentDB.convertLDTToUTC(checkStartParsed);
+            LocalDateTime checkEnd = AppointmentDB.convertLDTToUTC(checkEndParsed);
+           
+            try{
+                if(newStart.isBefore(checkEnd) && newEnd.isAfter(checkStart)){
+                        
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning");
+                alert.setHeaderText("Overbooked Appointment Time:");
+                alert.setContentText("Appointment Times Overlap");
+
+            alert.showAndWait();
+                   return false;
+                }
+            }catch(Exception e){
+                 System.out.println("Something strange haopoened here...");          
+            }   
+            
+        } 
+    
+        return true;
     }
     
 }

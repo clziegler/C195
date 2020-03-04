@@ -28,6 +28,8 @@ public class Appointment {
     private final StringProperty localStart;
     private final StringProperty localEnd;
     private final StringProperty contact;
+    private final StringProperty userName;
+    private final StringProperty userSchedule;
    
     
     public Appointment() {
@@ -43,6 +45,8 @@ public class Appointment {
         this.localStart = new SimpleStringProperty();
         this.localEnd = new SimpleStringProperty();
         this.contact = new SimpleStringProperty();
+        this.userName = new SimpleStringProperty();
+        this.userSchedule = new SimpleStringProperty();
         
     }
 
@@ -188,9 +192,33 @@ public class Appointment {
     public StringProperty contactProperty() {
         return contact;
     }
+    public final String getUserName() {
+        return userName.get();
+    }
+
+    public final void setUserName(String value) {
+        userName.set(value);
+    }
+
+    public StringProperty userNameProperty() {
+        return userName;
+    }
      @Override
     public String toString(){
-        return type.get() +" at " + localStart.get() + " with "+ custName.get();
+        return userName.get().substring(0,1).toUpperCase()+userName.get().substring(1).toLowerCase()
+                + ": "+ localStart.get()+" " + type.get() +" with "+ custName.get();
+    }
+    public final String getUserSchedule() {
+        return userSchedule.get();
+    }
+
+    public final void setUserSchedule(String value) {
+       userSchedule.set(value);
+    }
+    
+    public StringProperty userScheduleProperty(){
+        return userSchedule;
+        
     }
     
     

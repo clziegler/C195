@@ -115,7 +115,7 @@ public class UserLoginController implements Initializable {
         System.out.println("You clicked quit");
         System.exit(0);
     }
-    
+    //Exeption control to validate uset name and password
     private User loginAtempt(User inputUser) {
         User user = new User();
         PreparedStatement stmt = null;

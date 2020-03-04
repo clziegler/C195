@@ -34,7 +34,7 @@
                   </Text>
                   <TextFlow layoutX="584.0" layoutY="18.0">
                      <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="User Logged in : " />
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Consultant Logged in : " />
                         <Text fx:id="userText" strokeType="OUTSIDE" strokeWidth="0.0" text="User" />
                      </children>
                   </TextFlow>
@@ -65,10 +65,10 @@
                            <children>
                               <TableView fx:id="appointTableView" layoutX="-7.0" layoutY="29.0" prefHeight="346.0" prefWidth="548.0" AnchorPane.bottomAnchor="56.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <columns>
-                                    <TableColumn fx:id="appointTypeCol" prefWidth="209.66665649414062" text="Appointment" />
-                                    <TableColumn fx:id="custAppointCol" prefWidth="126.33334350585938" text="Customer" />
-                                    <TableColumn fx:id="appointStartCol" prefWidth="112.8333740234375" text="Start" />
-                                    <TableColumn fx:id="appointEndCol" prefWidth="97.1666259765625" text="End" />
+                                    <TableColumn fx:id="appointTypeCol" prefWidth="175.0" text="Appointment" />
+                                    <TableColumn fx:id="custAppointCol" prefWidth="134.5" text="Customer" />
+                                    <TableColumn fx:id="appointStartCol" prefWidth="122.0" text="Start" />
+                                    <TableColumn fx:id="appointEndCol" prefWidth="115.5" text="End" />
                                  </columns>
                               </TableView>
                               <ButtonBar layoutX="-10.0" layoutY="342.0" prefHeight="60.0" prefWidth="427.0">
@@ -92,7 +92,6 @@
                               <Insets left="5.0" />
                            </opaqueInsets>
                         </RadioButton>
-                        <RadioButton fx:id="todayRadioButton" mnemonicParsing="false" onAction="#radioButtonHandler" prefHeight="18.0" prefWidth="68.0" text="Today" />
                         <RadioButton fx:id="weeklyRadioButton" mnemonicParsing="false" onAction="#radioButtonHandler" prefHeight="18.0" prefWidth="78.0" text="Weekly" />
                         <RadioButton fx:id="monthlyRadioButton" mnemonicParsing="false" onAction="#radioButtonHandler" prefHeight="18.0" prefWidth="78.0" text="Monthly" />
                      </children>
