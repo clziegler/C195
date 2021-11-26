@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+<aiml version="1.0">
+    
+<!--This is the quiz that will help a student choose between 5 computer science jobs --> 
+
+<!-- Each job is a variable set to 0 --> 
+
+    
+<category>
+    <pattern>XQUIZ</pattern>
+        <template>
+            <think>
+            	<set name="SoftwareEngineer">0</set>
+            	<set name="ProductManager">0</set>
+            	<set name="SoftwareTester">0</set>
+            	<set name="DataScientist">0</set>
+            	<set name="DatabaseEngineer">0</set>
+            </think>
+        This is a quiz made up of 10 multiple choice questions that will help you choose a job after getting your computer science degree.<br/><br/>Type START to begin the quiz.
+        </template>
+</category>
+
+<category>
+    <pattern>START</pattern>
+    <that>TYPE START TO BEGIN THE QUIZ</that>
+    <template>
+        <srai>XQ1</srai>
+    </template>
+</category>
+<category>
+    <pattern>*</pattern>
+    <that>TYPE START TO BEGIN THE QUIZ</that>
+    <template>
+        <srai>XNORESPONSE</srai>
+    </template>
+</category>
+
+<!-- While in the quiz, the client can only choose the between the answers, or QUIT -->
+<category>
+    <pattern>XUNKNOWN</pattern>
+    <template>
+        Sorry, I don't understand <b><get name="selection"/></b> Please try again or type QUIT to end the test<br/><br/>
+    </template>
+</category>
+
+<!--Here are some random responses to the answers that the client gives to make the bot seem more interactive -->
+<category>
+    <pattern>XRESPONSE</pattern>
+    <template>
+      <random>
+        <li>Great!</li>
+        <li>Very interesting!</li>
+        <li>That's what I thought you would choose</li>
+        <li>Very good!</li>
+        <li>I see</li>
+        <li>Excellent choice!</li>
+      </random>
+    </template>
+</category>
+
+<!-- Question 1 -->
+
+<category>
+    <pattern>XQ1</pattern>
+    <template>
+        <think><set name="topic">jobtest1</set></think>
+        <b>1. Do you like math?</b> <br/><br/>
+        A.  Yes <br/>
+        B.  No <br/><br/>
+        Please type a or b for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest1">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>DSADD</srai><srai>DSADD</srai><srai>DSADD</srai><srai>SEADD</srai><srai>DEADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ2</srai></li>
+                <li value="B"><srai>STADD</srai><srai>STADD</srai><srai>PMADD</srai><srai>DSSUB</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ2</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ1</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 2 -->
+
+<category>
+    <pattern>XQ2</pattern>
+    <template>
+        <think><set name="topic">jobtest2</set></think>
+        <br>2. Would you rather...</br> <br/><br/>
+        A.  Build a model <br/>
+        B.  Put together a puzzle <br/>
+        C.  Play a team sport <br/><br/>
+        Please type a, b, or c for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest2">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>SEADD</srai><srai>SEADD</srai><srai>STADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ3</srai></li>
+                <li value="B"><srai>DEADD</srai><srai>DEADD</srai><srai>DSADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ3</srai></li>
+                <li value="C"><srai>PMADD</srai><srai>PMADD</srai><srai>STADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ3</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ2</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 3 -->
+
+<category>
+    <pattern>XQ3</pattern>
+    <template>
+        <think><set name="topic">jobtest3</set></think>
+        <b>3. Would you rather</b> <br/><br/>
+        A.  Be team captain <br/>
+        B.  Be the star player <br/><br/>
+        Please type a, b, for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest3">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>PMADD</srai><srai>PMADD</srai><srai>PMADD</srai><srai>STADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ4</srai></li>
+                <li value="B"><srai>PMSUB</srai><srai>SEADD</srai><srai>DSADD</srai><srai>DEADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ4</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ3</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 4 -->
+
+<category>
+    <pattern>XQ4</pattern>
+    <template>
+        <think><set name="topic">jobtest4</set></think>
+        <b>4. Do you...</b> <br/><br/>
+        A.   have an eye for detail<br/>
+        B.   see the big picture <br/><br/>
+        Please type a, b, for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest4">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>STADD</srai><srai>STADD</srai><srai>DSADD</srai><srai>DSADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ5</srai></li>
+                <li value="B"><srai>PMADD</srai><srai>PMADD</srai><srai>DEADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ5</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ4</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 5 -->
+
+<category>
+    <pattern>XQ5</pattern>
+    <template>
+        <think><set name="topic">jobtest5</set></think>
+        <b>5.Do you prefer?</b> <br/><br/>
+        A.  Group projects <br/>
+        B.  Solo projects <br/><br/>
+        Please type a, b, for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest5">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>PMADD</srai><srai>STADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ6</srai></li>
+                <li value="B"><srai>SEADD</srai><srai>DSADD</srai><srai>DEADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ6</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ5</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 6 -->
+
+<category>
+    <pattern>XQ6</pattern>
+    <template>
+        <think><set name="topic">jobtest6</set></think>
+        <b>6.Do you like coding?</b> <br/><br/>
+        A.  Yes <br/>
+        B.  No <br/><br/>
+        Please type a, b, for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest6">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>SEADD</srai><srai>SEADD</srai><srai>DSADD</srai><srai>DEADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ7</srai></li>
+                <li value="B"><srai>SESUB</srai><srai>SESUB</srai><srai>DSSUB</srai><srai>DESUB</srai><srai>STADD</srai><srai>PMADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ7</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ6</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 7 -->
+
+<category>
+    <pattern>XQ7</pattern>
+    <template>
+        <think><set name="topic">jobtest7</set></think>
+        <b>7. My closet is... </b><br/><br/>
+        A.  super organized <br/>
+        B.  somewhat organized <br/>
+        C.  a bit messy <br/><br/>
+        Please type a, b, or c for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest7">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>DEADD</srai><srai>DEADD</srai><srai>DEADD</srai><srai>DSADD</srai><srai>DSADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ8</srai></li>
+                <li value="B"><srai>DEADD</srai><srai>DSADD</srai><srai>SEADD</srai><srai>STADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ8</srai></li>
+                <li value="C"><srai>DESUB</srai><srai>DESUB</srai><srai>DSSUB</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ8</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ7</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 8 -->
+
+<category>
+    <pattern>XQ8</pattern>
+    <template>
+        <think><set name="topic">jobtest8</set></think>
+        <b>8. I am good at keeping to a schedule...</b><br/>
+        A.  Yes <br/>
+        B.  No <br/><br/>
+        Please type a, b, for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest8">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>PMADD</srai><srai>PMADD</srai><srai>SEADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ9</srai></li>
+                <li value="B"><srai>STADD</srai><srai>PMSUB</srai><srai>DSADD</srai><srai>DSADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ9</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ8</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 9 -->
+
+<category>
+    <pattern>XQ9</pattern>
+    <template>
+        <think><set name="topic">jobtest9</set></think>
+        <b>9.I believe...</b> <br/><br/>
+        A.  even the smallest defect should be fixed <br/>
+        B.  Nothing will ever be perfect, so I'm happy with "good enough" <br/><br/>
+        Please type a, b, for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest9">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>STADD</srai><srai>STADD</srai><srai>DSADD</srai><srai>DSADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ10</srai></li>
+                <li value="B"><srai>SEADD</srai><srai>PMADD</srai><srai>SEADD</srai><srai>STSUB</srai><srai>XRESPONSE</srai><br/><br/><srai>XQ10</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ9</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<!-- Question 10 -->
+
+<category>
+    <pattern>XQ10</pattern>
+    <template>
+        <think><set name="topic">jobtest10</set></think>
+        <b>10.  I like Google because...</b><br/><br/>
+        A.  They make cool things<br/>
+        B.  They organize the world's information <br/>
+        C.  The products they make work well <br/><br/>  
+        Please type a, b, or c for your answer or type QUIT to exit the quiz
+    </template>
+</category>
+
+<topic name="jobtest10">
+    <category>
+        <pattern>_</pattern>
+        <that>
+            _ TYPE * FOR YOUR ANSWER OR TYPE QUIT TO EXIT THE QUIZ
+        </that>
+        <template>
+            <think>
+                <set name="selection"><star/></set>
+                <set name="topic"></set>
+            </think>
+            <condition name="selection">
+                <li value="A"><srai>SEADD</srai><srai>PMADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQUIZDONE</srai></li>
+                <li value="B"><srai>DSADD</srai><srai>DEADD</srai><srai>DEADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQUIZDONE</srai></li>
+                <li value="C"><srai>STADD</srai><srai>STADD</srai><srai>PMADD</srai><srai>XRESPONSE</srai><br/><br/><srai>XQUIZDONE</srai></li>
+                <li value="QUIT">OK, we'll stop the quiz</li>
+                <li><srai>XUNKNOWN</srai><srai>XQ10</srai></li>
+            </condition>
+        </template>
+    </category>
+</topic>
+
+<category>
+    <pattern>XQUIZDONE</pattern>
+    <template> 
+        Congrats <get name="firstname" />! You finished the quiz! <br/><br/>
+        <split/>
+        Let me think about your answers... <delay>3</delay>
+        <split/>
+        <srai>TABULATE</srai>
+    </template>
+</category>
+
+<!-- Here is the logic to add 1 to each job catagory variable -->
+
+<category>
+    <pattern>SEADD</pattern>
+    <template>
+        <think>
+        <set name="SoftwareEngineer">
+        <map><name>successor</name><get name="SoftwareEngineer"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>PMADD</pattern>
+    <template>
+        <think>
+        <set name="ProductManager">
+        <map><name>successor</name><get name="ProductManager"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>STADD</pattern>
+    <template>
+        <think>
+        <set name="SoftwareTester">
+        <map><name>successor</name><get name="SoftwareTester"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>DSADD</pattern>
+    <template>
+        <think>
+        <set name="DataScientist">
+        <map><name>successor</name><get name="DataScientist"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>DEADD</pattern>
+    <template>
+        <think>
+        <set name="DatabaseEngineer">
+        <map><name>successor</name><get name="DatabaseEngineer"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<!-- Here is the logic to subtract 1 from each job catagory variable -->
+
+<category>
+    <pattern>SESUB</pattern>
+    <template>
+        <think>
+        <set name="SoftwareEngineer">
+        <map><name>predecessor</name><get name="SoftwareEngineer"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>PMSUB</pattern>
+    <template>
+        <think>
+        <set name="ProductManager">
+        <map><name>predecessor</name><get name="ProductManager"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>STSUB</pattern>
+    <template>
+        <think>
+        <set name="SoftwareTester">
+        <map><name>predecessor</name><get name="SoftwareTester"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>DSSUB</pattern>
+    <template>
+        <think>
+        <set name="DataScientist">
+        <map><name>predecessor</name><get name="DataScientist"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<category>
+    <pattern>DESUB</pattern>
+    <template>
+        <think>
+        <set name="DatabaseEngineer">
+        <map><name>predecessor</name><get name="DatabaseEngineer"/></map>
+        </set>
+        </think>
+    </template>
+</category>
+
+<!-- Here is the logic to select the job catagory with the highest point total -->
+<!-- The FLAG variable is initialized to TRUE. -->
+<!-- Each job catagory is compared to the others and if it is smaller, the FLAG variable is set to FALSE -->
+<!-- If Flag=True at the end, that job has the highest point total, if FLAG is FALSE, The next job is evaluated until the job with the highest point total if found -->
+<!-- The math is done by useing the AIML standard library -->
+
+<category>
+    <pattern>TABULATE</pattern>
+    <template>
+        <think>
+            <set name="FLAG">TRUE</set>
+            <set name="largest"><srai>XGT <get name="SoftwareEngineer"/> XS <get name="ProductManager"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="SoftwareEngineer"/> XS <get name="SoftwareTester"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="SoftwareEngineer"/> XS <get name="DataScientist"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="SoftwareEngineer"/> XS <get name="DatabaseEngineer"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+        </think>
+        <condition name="FLAG">
+            <li value="TRUE">You should be a Software Engineer</li>
+            <li><srai>PMLARGEST</srai></li>
+        </condition>
+    </template>
+</category>
+
+<category>
+    <pattern>PMLARGEST</pattern>
+    <template>
+        <think>
+            <set name="FLAG">TRUE</set>
+            <set name="largest"><srai>XGT <get name="ProductManager"/> XS <get name="SoftwareEngineer"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="ProductManager"/> XS <get name="SoftwareTester"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="ProductManager"/> XS <get name="DataScientist"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="ProductManager"/> XS <get name="DatabaseEngineer"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+        </think>
+        <condition name="FLAG">
+            <li value="TRUE">You should be a Product Manager</li>
+            <li><srai>STLARGEST</srai></li>
+        </condition>
+    </template>
+</category>
+
+<category>
+    <pattern>STLARGEST</pattern>
+    <template>
+        <think>
+            <set name="FLAG">TRUE</set>
+            <set name="largest"><srai>XGT <get name="SoftwareTester"/> XS <get name="SoftwareEngineer"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="SoftwareTester"/> XS <get name="ProductManager"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="SoftwareTester"/> XS <get name="DataScientist"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="SoftwareTester"/> XS <get name="DatabaseEngineer"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+        </think>
+        <condition name="FLAG">
+            <li value="TRUE">You should be a Software Quality Engineer</li>
+            <li><srai>DSLARGEST</srai></li>
+        </condition>
+    </template>
+</category>
+
+<category>
+    <pattern>DSLARGEST</pattern>
+    <template>
+        <think>
+            <set name="FLAG">TRUE</set>
+            <set name="largest"><srai>XGT <get name="DataScientist"/> XS <get name="SoftwareEngineer"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="DataScientist"/> XS <get name="ProductManager"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="DataScientist"/> XS <get name="SoftwareTester"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+            <set name="largest"><srai>XGT <get name="DataScientist"/> XS <get name="DatabaseEngineer"/></srai></set>
+            <condition name="largest">
+                <li value="FALSE"><set name="FLAG">FALSE</set></li>
+            </condition>
+        </think>
+        <condition name="FLAG">
+            <li value="TRUE">You should be a Data Scientist</li>
+            <li>You should be a Database Engineer</li>
+        </condition>
+    </template>
+</category>
+
+</aiml>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+  <category>
+    <pattern>*</pattern>
+    <template>
+        <condition name="firstname">
+            <li value="UNKNOWN"><srai>HI</srai></li>
+            <li>I'm sorry, I'm not sure what that is.<br/><br/> <srai>XMENU</srai></li>
+        </condition>
+        
+    </template>
+  </category>
+</aiml>

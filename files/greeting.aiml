@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="ISO-8859-1"?> 
+<aiml version="1.0">
+    
+<category>
+    <pattern>HI</pattern>
+    <template>
+        <condition name="firstname">
+            <li value="unknown">
+                HI, Im ChatChuck.<br/>
+                My goal is to help you learn about some of the different jobs you can get with a comupter science degree<br/><br/>
+                What should I call you?
+            </li>
+            <li>Hi, <get name="firstname"/></li>
+        </condition>
+    </template>
+</category>
+
+<category>
+    <pattern>HELLO ^</pattern>
+    <template><srai>HI</srai></template>
+</category>
+
+<category>
+    <pattern>*</pattern>
+    <that> * WHAT SHOULD I CALL YOU</that>
+    <template>
+        <think>
+            <set name="firstname"><formal><star/></formal></set>
+        </think> 
+            Got it, <get name="firstname" /><br/><br/>
+            <srai>XMENU</srai>
+            
+    </template>
+</category>
+
+<category>
+    <pattern>MY NAME IS *</pattern>
+    <template>
+        <think>
+            <set name="firstname"><formal><star/></formal></set>
+        </think> 
+            OK, I'll call you <get name="firstname" />
+    </template>
+</category>
+
+<category>
+    <pattern>XMENU</pattern>
+    <template>I can tell you about some of the jobs that are availible to a computer science graduate.<br/><br/>
+            I can tell you about:
+            <ul>
+                <li>Software Engineering</li>
+                <li>Software Quality Engineering</li>
+                <li>Product Management</li>
+                <li>Data Science</li>
+                <li>Database Engineering</li>
+            </ul>
+            Or you can take a quiz that might give you an idea about what job you might like.
+    </template>
+</category>
+
+<!-- Random no responses to make the bot seem more human -->
+
+<category>
+    <pattern>XNORESPONSE</pattern>
+    <template>
+        <random>
+            <li>OK</li>
+            <li>OK, tell me what job you want to know about</li>
+            <li>I see</li>
+            <li>Sure</li>
+        </random>
+    </template>
+</category>
+
+<!-- The different job catagories that the client can pick, quiz choice -->
+
+<category>
+    <pattern>^ SOFTWARE ENGINEERING</pattern>
+    <template>Do you want to know what a software engineer does?</template>
+</category>
+<category>
+    <pattern>^ SOFTWARE ENGINEER ^</pattern>
+    <template><srai>^ SOFTWARE ENGINEERING</srai></template>
+</category>
+<category>
+    <pattern>YES ^</pattern>
+    <that>^ SOFTWARE ENGINEER DOES</that>
+    <template><srai>XSOFTWAREENGINEERINGDEF</srai></template>
+</category>
+<category>
+    <pattern>NO ^</pattern>
+    <that>_ SOFTWARE ENGINEER DOES</that>
+    <template>OK, tell me what you want to know about.</template>
+</category>
+
+<category>
+    <pattern>^ SOFTWARE QUALITY ^</pattern>
+    <template>Do you want to know what a software quality engineer does?</template>
+</category>
+<category>
+    <pattern>^ QA ^</pattern>
+    <template><srai>^ SOFTWARE QUALITY ^</srai></template>
+</category>
+<category>
+    <pattern>YES ^</pattern>
+    <that>^ SOFTWARE QUALITY ENGINEER DOES</that>
+    <template><srai>XSOFTWAREQUALITYENGINEERINGDEF</srai></template>
+</category>
+<category>
+    <pattern>NO ^</pattern>
+    <that>^ SOFTWARE QUALITY ENGINEER DOES</that>
+    <template><srai>XNORESPONSE</srai></template>
+</category>
+
+<category>
+    <pattern>^ PROJECT MANAGEMENT ^</pattern>
+    <template>Do you want to know what a project manager does?</template>
+</category>
+<category>
+    <pattern>^ MANAGER ^</pattern>
+    <template><srai>^ PROJECT MANAGEMENT ^</srai></template>
+</category>
+<category>
+    <pattern>YES ^</pattern>
+    <that>^ PROJECT MANAGER DOES</that>
+    <template><srai>XPROJECTMANAGEMENTDEF</srai></template>
+</category>
+<category>
+    <pattern>NO ^</pattern>
+    <that>^ PROJECT MANAGER DOES</that>
+    <template><srai>XNORESPONSE</srai></template>
+</category>
+
+<category>
+    <pattern>^ DATA SCIENCE ^</pattern>
+    <template>Do you want to know what a data scientist does?</template>
+</category>
+<category>
+    <pattern>^ SCIENTIST ^</pattern>
+    <template><srai>^ DATA SCIENCE ^</srai></template>
+</category>
+<category>
+    <pattern>YES ^</pattern>
+    <that>^ DATA SCIENTIST DOES</that>
+    <template><srai>XDATASCIENCEDEF</srai></template>
+</category>
+<category>
+    <pattern>NO ^</pattern>
+    <that>^ DATA SCIENTIST DOES</that>
+    <template><srai>XNORESPONSE</srai></template>
+</category>
+
+<category>
+    <pattern>^ DATABASE ENGINEERING ^</pattern>
+    <template>Do you want to know what a database engineer does?</template>
+</category>
+<category>
+    <pattern>^ DATABASE ^</pattern>
+    <template><srai>^ DATABASE ENGINEERING ^</srai></template>
+</category>
+<category>
+    <pattern>YES ^</pattern>
+    <that>^ DATABASE ENGINEER DOES</that>
+    <template><srai>XDATABASEEINGIENNERINGEDEF</srai></template>
+</category>
+<category>
+    <pattern>NO ^</pattern>
+    <that>^ DATABASE ENGINEER DOES</that>
+    <template><srai>XNORESPONSE</srai></template>
+</category>
+
+<category>
+    <pattern>^ QUIZ ^</pattern>
+    <template>Do you want to take the job quiz?</template>
+</category>
+
+<category>
+    <pattern>YES ^</pattern>
+    <that>DO YOU WANT TO TAKE THE JOB QUIZ</that>
+    <template><srai>XQUIZ</srai></template>
+</category>
+
+<category>
+    <pattern>NO ^</pattern>
+    <that>DO YOU WANT TO TAKE THE JOB QUIZ</that>
+    <template><srai>XNORESPONSE</srai></template>
+</category>
+
+<!-- Job Descriptions -->
+
+<category>
+    <pattern>XDATABASEEINGIENNERINGEDEF</pattern>
+    <template>
+        Database Engineers design databases. 
+        They are responsible for the security of the database,
+        making recovery and backups of the database in case of failure, 
+        and keeping the whole thing running correctly. The database engineers’ 
+        primary goal is to create a system where anyone with permission can pull 
+        useful data from the database.
+    </template>
+</category>
+<category>
+    <pattern>XDATASCIENCEDEF</pattern>
+    <template>
+        Data Scientists extract meaning and from vast amounts of data. 
+        They use statistics, machine learning and other tools to accomplish this. 
+        They collect, process, and clean raw data to find patterns, build models and algorithms 
+        so organizations can make data-driven decisions.
+    </template>
+</category>
+<category>
+    <pattern>XPROJECTMANAGEMENTDEF</pattern>
+    <template>
+        Project Managers make sure that the software gets delivered on time with the highest level of quality possible. 
+        They are in charge of planning, scheduling, budgeting and execution. 
+</template>
+</category>
+<category>
+    <pattern>XSOFTWAREQUALITYENGINEERINGDEF</pattern>
+    <template>
+        Software Quality Engineers focus on improving the development process and preventing software defects. 
+        They assure that the software product complies with the requirements, assesses risks, tests the software for defects, and generate ideas to improve software quality.
+    </template>
+</category>
+<category>
+    <pattern>XSOFTWAREENGINEERINGDEF</pattern>
+    <template>
+        Software Engineers design and create computer applications and systems. 
+        They use knowledge of coding languages, algorithms and other computer science principles to create software.
+    </template>
+</category>
+
+</aiml>
